@@ -74,13 +74,7 @@ line.BackgroundTransparency = 0.5
 line.Parent = frame
 
 -- ============================================
--- VARIÁVEIS
--- ============================================
-local farmAtivo = false
-local player = game.Players.LocalPlayer
-
--- ============================================
--- FUNÇÃO PARA CRIAR BOTÕES
+-- FUNÇÕES PARA CRIAR ELEMENTOS
 -- ============================================
 
 function criarBotao(texto, y, cor, callback)
@@ -120,62 +114,11 @@ function criarLabel(texto, y, cor)
     return lbl
 end
 
-function criarToggle(texto, y, cor, callback)
-    local toggle = Instance.new("TextButton")
-    toggle.Size = UDim2.new(0, 320, 0, 35)
-    toggle.Position = UDim2.new(0.5, -160, 0, y)
-    toggle.Text = texto .. " ❌"
-    toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggle.BackgroundColor3 = cor or Color3.fromRGB(50, 50, 80)
-    toggle.Font = Enum.Font.GothamBold
-    toggle.TextSize = 12
-    toggle.BorderSizePixel = 0
-    toggle.Parent = frame
-    
-    local toggleCorner = Instance.new("UICorner")
-    toggleCorner.CornerRadius = UDim.new(0, 6)
-    toggleCorner.Parent = toggle
-    
-    local ativo = false
-    
-    toggle.MouseButton1Click:Connect(function()
-        ativo = not ativo
-        toggle.Text = texto .. (ativo and " ✅" or " ❌")
-        print("[TOGGLE] " .. texto .. (ativo and " ATIVADO" or " DESATIVADO"))
-        if callback then callback(ativo) end
-    end)
-    
-    return toggle
-end
-
-function criarSelecao(texto, y, opcoes, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 320, 0, 35)
-    btn.Position = UDim2.new(0.5, -160, 0, y)
-    btn.Text = texto .. ": " .. opcoes[1]
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 70)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 12
-    btn.BorderSizePixel = 0
-    btn.Parent = frame
-    
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
-    btnCorner.Parent = btn
-    
-    local index = 1
-    
-    btn.MouseButton1Click:Connect(function()
-        index = index + 1
-        if index > #opcoes then index = 1 end
-        btn.Text = texto .. ": " .. opcoes[index]
-        print("[SELECAO] " .. texto .. " = " .. opcoes[index])
-        if callback then callback(opcoes[index]) end
-    end)
-    
-    return btn
-end
+-- ============================================
+-- VARIÁVEIS
+-- ============================================
+local farmAtivo = false
+local player = game.Players.LocalPlayer
 
 -- ============================================
 -- FUNÇÃO DE ATAQUE (CELULAR)
@@ -369,7 +312,7 @@ local Trade = {
 }
 
 -- ============================================
--- CRIAR INTERFACE COMPLETA
+-- CRIA INTERFACE COMPLETA
 -- ============================================
 
 local y = 65
