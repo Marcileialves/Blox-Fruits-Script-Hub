@@ -1,9 +1,9 @@
 --[[
-    BLOX FRUITS SCRIPT HUB - VERSÃO 7.0 (COMPLETO)
+    BLOX FRUITS SCRIPT HUB - VERSÃO 8.0 (AJUSTADO)
     GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub
 ]]
 
-print("🔥 Carregando Blox Fruits Hub 7.0...")
+print("🔥 Carregando Blox Fruits Hub 8.0...")
 
 local player = game.Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -70,10 +70,6 @@ function EncontrarMelhorIlha()
     end
     return melhor or Ilhas[1]
 end
-
--- ============================================
--- FUNÇÕES BÁSICAS
--- ============================================
 
 function TeleportarIlha(nome)
     print("[TELEPORTE] 🚀 " .. nome)
@@ -203,7 +199,7 @@ function MostrarInfo()
 end
 
 -- ============================================
--- CRIA INTERFACE
+-- CRIA INTERFACE (AJUSTADA)
 -- ============================================
 
 local gui = Instance.new("ScreenGui")
@@ -212,8 +208,8 @@ gui.Parent = player.PlayerGui
 gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 350, 0, 450)
-frame.Position = UDim2.new(0.5, -175, 0.5, -225)
+frame.Size = UDim2.new(0, 380, 0, 440)  -- MAIS LARGURA, MENOS ALTURA
+frame.Position = UDim2.new(0.5, -190, 0.5, -220)
 frame.BackgroundColor3 = Color3.fromRGB(8, 8, 28)
 frame.BorderSizePixel = 2
 frame.BorderColor3 = Color3.fromRGB(255, 215, 0)
@@ -223,37 +219,37 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 12)
 corner.Parent = frame
 
--- Cabeçalho
+-- Cabeçalho (menor)
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 35)
+header.Size = UDim2.new(1, 0, 0, 30)
 header.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
 header.BackgroundTransparency = 0.1
 header.BorderSizePixel = 0
 header.Parent = frame
 
 local logo = Instance.new("TextLabel")
-logo.Size = UDim2.new(1, 0, 0, 35)
-logo.Text = "🔥 BLOX FRUITS 7.0"
+logo.Size = UDim2.new(1, 0, 0, 30)
+logo.Text = "🔥 BLOX FRUITS 8.0"
 logo.TextColor3 = Color3.fromRGB(255, 215, 0)
 logo.BackgroundTransparency = 1
 logo.Font = Enum.Font.GothamBold
-logo.TextSize = 16
+logo.TextSize = 14
 logo.Parent = header
 
 local exitBtn = Instance.new("TextButton")
-exitBtn.Size = UDim2.new(0, 24, 0, 24)
-exitBtn.Position = UDim2.new(1, -30, 0, 6)
+exitBtn.Size = UDim2.new(0, 20, 0, 20)
+exitBtn.Position = UDim2.new(1, -26, 0, 5)
 exitBtn.Text = "✖"
 exitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 exitBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 exitBtn.BackgroundTransparency = 0.2
 exitBtn.Font = Enum.Font.GothamBold
-exitBtn.TextSize = 12
+exitBtn.TextSize = 11
 exitBtn.BorderSizePixel = 0
 exitBtn.Parent = header
 
 local exitCorner = Instance.new("UICorner")
-exitCorner.CornerRadius = UDim.new(0, 5)
+exitCorner.CornerRadius = UDim.new(0, 4)
 exitCorner.Parent = exitBtn
 
 exitBtn.TouchTap:Connect(function()
@@ -267,19 +263,25 @@ exitBtn.MouseButton1Click:Connect(function()
     print("👋 Hub fechado!")
 end)
 
--- Menu Lateral
+-- ============================================
+-- MENU LATERAL (COM NOMES)
+-- ============================================
+
 local menuLateral = Instance.new("Frame")
-menuLateral.Size = UDim2.new(0, 60, 1, -40)
-menuLateral.Position = UDim2.new(0, 0, 0, 35)
+menuLateral.Size = UDim2.new(0, 85, 1, -35)
+menuLateral.Position = UDim2.new(0, 0, 0, 30)
 menuLateral.BackgroundColor3 = Color3.fromRGB(20, 20, 45)
 menuLateral.BackgroundTransparency = 0.2
 menuLateral.BorderSizePixel = 0
 menuLateral.Parent = frame
 
--- Conteúdo
+-- ============================================
+-- CONTEÚDO (COM SCROLLBAR INTELIGENTE)
+-- ============================================
+
 local content = Instance.new("ScrollingFrame")
-content.Size = UDim2.new(1, -70, 1, -40)
-content.Position = UDim2.new(0, 65, 0, 35)
+content.Size = UDim2.new(1, -95, 1, -35)
+content.Position = UDim2.new(0, 90, 0, 30)
 content.BackgroundTransparency = 1
 content.BorderSizePixel = 0
 content.ScrollBarThickness = 2
@@ -292,49 +294,49 @@ contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = content
 
 -- ============================================
--- CATEGORIAS
+-- CATEGORIAS (COM NOMES)
 -- ============================================
 
 local categorias = {
-    {nome = "📈", id = 1, label = "PROG"},
-    {nome = "⚔️", id = 2, label = "BOSS"},
-    {nome = "🌊", id = 3, label = "SEA"},
-    {nome = "⚡", id = 4, label = "RAIDS"},
-    {nome = "🍎", id = 5, label = "FRUTAS"},
-    {nome = "🗡️", id = 6, label = "ESPADAS"},
-    {nome = "🏹", id = 7, label = "ARMAS"},
-    {nome = "🥊", id = 8, label = "ESTILOS"},
-    {nome = "👤", id = 9, label = "RAÇA"},
-    {nome = "🟣", id = 10, label = "HAKI"},
-    {nome = "📦", id = 11, label = "MAT."},
-    {nome = "🎯", id = 12, label = "ITENS"},
-    {nome = "📋", id = 13, label = "MISSOES"},
-    {nome = "🗺️", id = 14, label = "NPC"},
-    {nome = "🎀", id = 15, label = "ACES"},
-    {nome = "🏷️", id = 16, label = "TIT."},
-    {nome = "🏝️", id = 17, label = "EXPL"},
-    {nome = "⚔️", id = 18, label = "PVP"},
-    {nome = "📦", id = 19, label = "INV."},
-    {nome = "🚀", id = 20, label = "TELE"},
-    {nome = "🌐", id = 21, label = "SRV"},
-    {nome = "💳", id = 22, label = "ECO"},
-    {nome = "📊", id = 23, label = "STAT"},
-    {nome = "⚙️", id = 24, label = "UTIL"},
-    {nome = "🤖", id = 25, label = "AUTO"},
+    {nome = "📈PROG", id = 1},
+    {nome = "👹BOSS", id = 2},
+    {nome = "🌊SEA", id = 3},
+    {nome = "⚔️RAID", id = 4},
+    {nome = "🍎FRUT", id = 5},
+    {nome = "🗡️ESP", id = 6},
+    {nome = "🏹ARM", id = 7},
+    {nome = "🥊EST", id = 8},
+    {nome = "👤RAÇA", id = 9},
+    {nome = "🟣HAKI", id = 10},
+    {nome = "📦MAT", id = 11},
+    {nome = "🎯ITENS", id = 12},
+    {nome = "📋MISS", id = 13},
+    {nome = "🗺️NPC", id = 14},
+    {nome = "🎀ACES", id = 15},
+    {nome = "🏷️TIT", id = 16},
+    {nome = "🏝️EXPL", id = 17},
+    {nome = "⚔️PVP", id = 18},
+    {nome = "📦INV", id = 19},
+    {nome = "🚀TELE", id = 20},
+    {nome = "🌐SRV", id = 21},
+    {nome = "💳ECO", id = 22},
+    {nome = "📊STAT", id = 23},
+    {nome = "⚙️UTIL", id = 24},
+    {nome = "🤖AUTO", id = 25},
 }
 
 local botoesMenu = {}
 
 function CriarBotaoMenu(cat)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -4, 0, 26)
-    btn.Position = UDim2.new(0, 2, 0, 2 + (#botoesMenu * 28))
+    btn.Size = UDim2.new(1, -4, 0, 28)
+    btn.Position = UDim2.new(0, 2, 0, 2 + (#botoesMenu * 30))
     btn.Text = cat.nome
     btn.TextColor3 = Color3.fromRGB(200, 200, 220)
     btn.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
     btn.BackgroundTransparency = 0.3
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 11
+    btn.TextSize = 10
     btn.BorderSizePixel = 0
     btn.Parent = menuLateral
     
@@ -390,7 +392,7 @@ end
 
 function CriarBotao(texto, cor, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -4, 0, 26)
+    btn.Size = UDim2.new(1, -4, 0, 24)
     btn.Position = UDim2.new(0, 2, 0, 0)
     btn.Text = texto
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -407,8 +409,8 @@ function CriarBotao(texto, cor, callback)
     btnCorner.Parent = btn
     
     local arrow = Instance.new("TextLabel")
-    arrow.Size = UDim2.new(0, 16, 0, 16)
-    arrow.Position = UDim2.new(1, -20, 0.5, -8)
+    arrow.Size = UDim2.new(0, 14, 0, 14)
+    arrow.Position = UDim2.new(1, -18, 0.5, -7)
     arrow.Text = "▶"
     arrow.TextColor3 = Color3.fromRGB(255, 215, 0)
     arrow.BackgroundTransparency = 1
@@ -454,7 +456,7 @@ function CriarInfo(texto, valor, cor)
     frame2.Parent = content
     
     local lbl1 = Instance.new("TextLabel")
-    lbl1.Size = UDim2.new(0, 65, 1, 0)
+    lbl1.Size = UDim2.new(0, 55, 1, 0)
     lbl1.Position = UDim2.new(0, 6, 0, 0)
     lbl1.Text = texto
     lbl1.TextColor3 = Color3.fromRGB(180, 180, 200)
@@ -465,8 +467,8 @@ function CriarInfo(texto, valor, cor)
     lbl1.Parent = frame2
     
     local lbl2 = Instance.new("TextLabel")
-    lbl2.Size = UDim2.new(0, 90, 1, 0)
-    lbl2.Position = UDim2.new(1, -100, 0, 0)
+    lbl2.Size = UDim2.new(0, 80, 1, 0)
+    lbl2.Position = UDim2.new(1, -90, 0, 0)
     lbl2.Text = tostring(valor)
     lbl2.TextColor3 = cor or Color3.fromRGB(255, 215, 0)
     lbl2.BackgroundTransparency = 1
@@ -498,6 +500,20 @@ function CriarSub(texto, cor)
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = content
     return lbl
+end
+
+-- ============================================
+-- ATUALIZA TAMANHO DO SCROLLBAR (INTELIGENTE)
+-- ============================================
+
+local function AtualizarScroll()
+    local totalAltura = 0
+    for _, child in pairs(content:GetChildren()) do
+        if child:IsA("Frame") or child:IsA("TextButton") or child:IsA("TextLabel") then
+            totalAltura = totalAltura + child.Size.Y.Offset + 2
+        end
+    end
+    content.CanvasSize = UDim2.new(0, 0, 0, totalAltura)
 end
 
 -- ============================================
@@ -537,6 +553,8 @@ function CarregarConteudo(id)
     elseif id == 24 then CarregarUtilidades()
     elseif id == 25 then CarregarAutomacao()
     end
+    
+    AtualizarScroll()
 end
 
 -- ============================================
@@ -940,9 +958,9 @@ end
 -- ============================================
 
 local footer = Instance.new("TextLabel")
-footer.Size = UDim2.new(1, 0, 0, 16)
-footer.Position = UDim2.new(0, 0, 1, -5)
-footer.Text = "⭐ v7.0 Completo | Marcileialves"
+footer.Size = UDim2.new(1, 0, 0, 14)
+footer.Position = UDim2.new(0, 0, 1, -4)
+footer.Text = "⭐ v8.0 Ajustado | Marcileialves"
 footer.TextColor3 = Color3.fromRGB(150, 150, 180)
 footer.BackgroundTransparency = 1
 footer.Font = Enum.Font.GothamMedium
@@ -955,5 +973,5 @@ footer.Parent = frame
 
 SelecionarCategoria(1)
 
-print("✅ Blox Fruits Hub 7.0 carregado!")
+print("✅ Blox Fruits Hub 8.0 carregado!")
 print("📌 GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub")
