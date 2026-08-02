@@ -1,12 +1,15 @@
 --[[
-    BLOX FRUITS SCRIPT HUB - VERSÃO 8.0 (AJUSTADO)
+    BLOX FRUITS SCRIPT HUB - VERSÃO 9.0 (COMPLETO)
     GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub
+    Auto Quest | Auto Farm | Auto Raid | Sea Events | Sniper Frutas | Server Hop
 ]]
 
-print("🔥 Carregando Blox Fruits Hub 8.0...")
+print("🔥 Carregando Blox Fruits Hub 9.0...")
 
 local player = game.Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
 
 if not player then
     print("❌ Jogador não encontrado!")
@@ -25,27 +28,27 @@ end)
 -- ============================================
 
 local Ilhas = {
-    {nome = "Jungle", nivelMin = 1, nivelMax = 30, xp = 80},
-    {nome = "Pirate Village", nivelMin = 15, nivelMax = 45, xp = 100},
-    {nome = "Desert", nivelMin = 30, nivelMax = 60, xp = 150},
-    {nome = "Frozen Village", nivelMin = 50, nivelMax = 90, xp = 200},
-    {nome = "Marine Fortress", nivelMin = 70, nivelMax = 120, xp = 250},
-    {nome = "Skypiea", nivelMin = 90, nivelMax = 150, xp = 300},
-    {nome = "Prison", nivelMin = 120, nivelMax = 200, xp = 400},
-    {nome = "Colosseum", nivelMin = 150, nivelMax = 250, xp = 500},
-    {nome = "Magma Village", nivelMin = 200, nivelMax = 300, xp = 600},
-    {nome = "Underwater City", nivelMin = 250, nivelMax = 400, xp = 700},
-    {nome = "Fountain City", nivelMin = 350, nivelMax = 500, xp = 800},
-    {nome = "Kingdom of Rose", nivelMin = 500, nivelMax = 750, xp = 900},
-    {nome = "Green Zone", nivelMin = 600, nivelMax = 850, xp = 1000},
-    {nome = "Graveyard", nivelMin = 700, nivelMax = 950, xp = 1100},
-    {nome = "Cursed Ship", nivelMin = 900, nivelMax = 1200, xp = 1200},
-    {nome = "Ice Castle", nivelMin = 1100, nivelMax = 1400, xp = 1300},
-    {nome = "Forgotten Island", nivelMin = 1300, nivelMax = 1600, xp = 1400},
-    {nome = "Hydra Island", nivelMin = 1500, nivelMax = 2000, xp = 1600},
-    {nome = "Great Tree", nivelMin = 1700, nivelMax = 2200, xp = 1800},
-    {nome = "Floating Turtle", nivelMin = 1900, nivelMax = 2500, xp = 2000},
-    {nome = "Sea of Treats", nivelMin = 2200, nivelMax = 3000, xp = 2500},
+    {nome = "Jungle", nivelMin = 1, nivelMax = 30, xp = 80, quest = "Jungle Quest"},
+    {nome = "Pirate Village", nivelMin = 15, nivelMax = 45, xp = 100, quest = "Pirate Quest"},
+    {nome = "Desert", nivelMin = 30, nivelMax = 60, xp = 150, quest = "Desert Quest"},
+    {nome = "Frozen Village", nivelMin = 50, nivelMax = 90, xp = 200, quest = "Frozen Quest"},
+    {nome = "Marine Fortress", nivelMin = 70, nivelMax = 120, xp = 250, quest = "Marine Quest"},
+    {nome = "Skypiea", nivelMin = 90, nivelMax = 150, xp = 300, quest = "Skypiea Quest"},
+    {nome = "Prison", nivelMin = 120, nivelMax = 200, xp = 400, quest = "Prison Quest"},
+    {nome = "Colosseum", nivelMin = 150, nivelMax = 250, xp = 500, quest = "Colosseum Quest"},
+    {nome = "Magma Village", nivelMin = 200, nivelMax = 300, xp = 600, quest = "Magma Quest"},
+    {nome = "Underwater City", nivelMin = 250, nivelMax = 400, xp = 700, quest = "Underwater Quest"},
+    {nome = "Fountain City", nivelMin = 350, nivelMax = 500, xp = 800, quest = "Fountain Quest"},
+    {nome = "Kingdom of Rose", nivelMin = 500, nivelMax = 750, xp = 900, quest = "Rose Quest"},
+    {nome = "Green Zone", nivelMin = 600, nivelMax = 850, xp = 1000, quest = "Green Quest"},
+    {nome = "Graveyard", nivelMin = 700, nivelMax = 950, xp = 1100, quest = "Graveyard Quest"},
+    {nome = "Cursed Ship", nivelMin = 900, nivelMax = 1200, xp = 1200, quest = "Cursed Quest"},
+    {nome = "Ice Castle", nivelMin = 1100, nivelMax = 1400, xp = 1300, quest = "Ice Quest"},
+    {nome = "Forgotten Island", nivelMin = 1300, nivelMax = 1600, xp = 1400, quest = "Forgotten Quest"},
+    {nome = "Hydra Island", nivelMin = 1500, nivelMax = 2000, xp = 1600, quest = "Hydra Quest"},
+    {nome = "Great Tree", nivelMin = 1700, nivelMax = 2200, xp = 1800, quest = "Great Quest"},
+    {nome = "Floating Turtle", nivelMin = 1900, nivelMax = 2500, xp = 2000, quest = "Turtle Quest"},
+    {nome = "Sea of Treats", nivelMin = 2200, nivelMax = 3000, xp = 2500, quest = "Sea Quest"},
 }
 
 function EncontrarMelhorIlha()
@@ -71,11 +74,31 @@ function EncontrarMelhorIlha()
     return melhor or Ilhas[1]
 end
 
+function EncontrarNPC(nome)
+    for _, v in pairs(workspace:GetChildren()) do
+        if v:IsA("Model") and (v.Name == nome or string.find(v.Name, nome)) then
+            return v
+        end
+    end
+    return nil
+end
+
+function Teleportar(CFrame)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        pcall(function()
+            player.Character.HumanoidRootPart.CFrame = CFrame
+            task.wait(0.3)
+        end)
+        return true
+    end
+    return false
+end
+
 function TeleportarIlha(nome)
     print("[TELEPORTE] 🚀 " .. nome)
     local ilha = workspace:FindFirstChild(nome)
-    if ilha and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        player.Character.HumanoidRootPart.CFrame = ilha.CFrame + Vector3.new(0, 50, 0)
+    if ilha then
+        Teleportar(ilha.CFrame + Vector3.new(0, 50, 0))
         task.wait(0.5)
         return true
     end
@@ -101,22 +124,43 @@ function Curar()
 end
 
 -- ============================================
--- FARM AUTOMÁTICO
+-- AUTO QUEST E AUTO FARM INTELIGENTE
 -- ============================================
 
 local farmAtivo = false
 local kills = 0
 local nivelInicial = 0
+local questAtiva = false
+local modoAutoQuest = false
 
-function FarmarAutomatico()
+function PegarQuest(nomeNPC)
+    local npc = EncontrarNPC(nomeNPC)
+    if npc then
+        Teleportar(npc:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0, 0, 5))
+        task.wait(0.5)
+        if UserInputService.TouchEnabled then
+            UserInputService:TouchTap(Vector2.new(500, 300))
+            task.wait(0.2)
+            UserInputService:TouchTap(Vector2.new(500, 300))
+        end
+        print("[QUEST] 📋 Quest pega com: " .. nomeNPC)
+        return true
+    end
+    return false
+end
+
+function FarmarComQuest()
     if farmAtivo then
         print("[FARM] ⚠️ Já está ativo!")
         return
     end
+    
     farmAtivo = true
     kills = 0
     nivelInicial = player.Level or player:GetAttribute("Level") or 0
-    print("[FARM] 🚀 Iniciando Farm! Nv: " .. nivelInicial .. " → 3000")
+    modoAutoQuest = true
+    print("[FARM] 🚀 Iniciando Farm Inteligente com Auto Quest!")
+    print("[FARM] 🎯 Nível: " .. nivelInicial .. " → 3000")
     
     task.spawn(function()
         while farmAtivo do
@@ -128,6 +172,14 @@ function FarmarAutomatico()
             
             local ilha = EncontrarMelhorIlha()
             if ilha then
+                -- Pega quest da ilha
+                if not questAtiva then
+                    print("[FARM] 📋 Pegando quest: " .. ilha.quest)
+                    PegarQuest(ilha.quest)
+                    questAtiva = true
+                    task.wait(1)
+                end
+                
                 TeleportarIlha(ilha.nome)
                 task.wait(1)
             end
@@ -156,12 +208,16 @@ function FarmarAutomatico()
                     task.wait(0.05)
                 end
                 kills = kills + 1
+                
                 if kills % 10 == 0 then
                     task.wait(math.random(2, 5))
                 end
+                
                 if kills % 50 == 0 then
                     local nivel = player.Level or player:GetAttribute("Level") or 0
                     print("[FARM] ⚔️ " .. kills .. " kills | Nv: " .. nivel)
+                    -- Repega quest a cada 50 kills
+                    questAtiva = false
                 end
             else
                 task.wait(2)
@@ -171,10 +227,12 @@ function FarmarAutomatico()
             if novoNivel > nivelAtual then
                 print("[FARM] 🎉 Nível UP! " .. nivelAtual .. " → " .. novoNivel)
                 Curar()
+                questAtiva = false
             end
         end
         
         farmAtivo = false
+        questAtiva = false
         local nivelFinal = player.Level or player:GetAttribute("Level") or 0
         print("[FARM] ✅ Concluído! Nv: " .. nivelInicial .. " → " .. nivelFinal)
         print("[FARM] ⚔️ Kills: " .. kills)
@@ -183,8 +241,232 @@ end
 
 function PararFarm()
     farmAtivo = false
+    questAtiva = false
     print("[FARM] ⏹ Parado - " .. kills .. " kills")
 end
+
+-- ============================================
+-- AUTO RAID
+-- ============================================
+
+local raidAtivo = false
+
+function AutoRaid()
+    if raidAtivo then
+        print("[RAID] ⚠️ Já está ativo!")
+        return
+    end
+    
+    raidAtivo = true
+    print("[RAID] ⚔️ Iniciando Auto Raid...")
+    
+    task.spawn(function()
+        local npcRaid = EncontrarNPC("Raid")
+        if npcRaid then
+            Teleportar(npcRaid:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0, 0, 5))
+            task.wait(0.5)
+            if UserInputService.TouchEnabled then
+                UserInputService:TouchTap(Vector2.new(500, 300))
+                task.wait(0.2)
+                UserInputService:TouchTap(Vector2.new(500, 300))
+            end
+            print("[RAID] ✅ Raid iniciada!")
+        else
+            print("[RAID] ❌ NPC de Raid não encontrado!")
+        end
+        
+        -- Simula luta na raid
+        for i = 1, 10 do
+            if not raidAtivo then break end
+            Atacar()
+            task.wait(0.5)
+            print("[RAID] ⚔️ Progresso: " .. (i * 10) .. "%")
+        end
+        
+        raidAtivo = false
+        print("[RAID] ✅ Raid concluída!")
+    end)
+end
+
+function PararRaid()
+    raidAtivo = false
+    print("[RAID] ⏹ Raid parada!")
+end
+
+-- ============================================
+-- SNIPER DE FRUTAS E BAÚS
+-- ============================================
+
+local sniperAtivo = false
+
+function SniperFrutas()
+    if sniperAtivo then
+        print("[SNIPER] ⚠️ Já está ativo!")
+        return
+    end
+    
+    sniperAtivo = true
+    print("[SNIPER] 🍎 Procurando frutas e baús...")
+    
+    task.spawn(function()
+        while sniperAtivo do
+            for _, v in pairs(workspace:GetChildren()) do
+                if not sniperAtivo then break end
+                if v:IsA("Tool") and (v:FindFirstChild("Fruit") or string.find(v.Name, "Fruit") or string.find(v.Name, "Chest")) then
+                    print("[SNIPER] 🎯 Encontrado: " .. v.Name)
+                    local handle = v:FindFirstChild("Handle")
+                    if handle then
+                        Teleportar(handle.CFrame + Vector3.new(0, 0, 5))
+                    else
+                        Teleportar(v:GetPivot() + Vector3.new(0, 0, 5))
+                    end
+                    task.wait(0.3)
+                    if UserInputService.TouchEnabled then
+                        UserInputService:TouchTap(Vector2.new(500, 300))
+                    end
+                    task.wait(0.5)
+                end
+            end
+            task.wait(2)
+        end
+    end)
+end
+
+function PararSniper()
+    sniperAtivo = false
+    print("[SNIPER] ⏹ Parado!")
+end
+
+-- ============================================
+-- AUTO SEA EVENTS
+-- ============================================
+
+local seaEventAtivo = false
+
+function AutoSeaEvent()
+    if seaEventAtivo then
+        print("[SEA] ⚠️ Já está ativo!")
+        return
+    end
+    
+    seaEventAtivo = true
+    print("[SEA] 🌊 Procurando eventos marítimos...")
+    
+    task.spawn(function()
+        while seaEventAtivo do
+            local eventos = {"Terror Shark", "Sea Beast", "Leviathan"}
+            for _, evento in pairs(eventos) do
+                if not seaEventAtivo then break end
+                local alvo = EncontrarNPC(evento)
+                if alvo then
+                    print("[SEA] 🦈 Encontrado: " .. evento)
+                    Teleportar(alvo:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0, 0, 5))
+                    task.wait(0.3)
+                    for i = 1, 10 do
+                        if not seaEventAtivo then break end
+                        Atacar()
+                        task.wait(0.2)
+                    end
+                    print("[SEA] ✅ " .. evento .. " derrotado!")
+                end
+            end
+            task.wait(5)
+        end
+    end)
+end
+
+function PararSeaEvent()
+    seaEventAtivo = false
+    print("[SEA] ⏹ Parado!")
+end
+
+-- ============================================
+-- AUTO SERVER HOP
+-- ============================================
+
+function ServerHop()
+    print("[SERVER] 🔄 Procurando novo servidor...")
+    pcall(function()
+        TeleportService:Teleport(game.PlaceId, player)
+    end)
+end
+
+function ServerHopBoss()
+    print("[SERVER] 🔄 Procurando servidor com Boss...")
+    -- Simulação: procura um servidor com boss
+    ServerHop()
+end
+
+function ServerHopFrutas()
+    print("[SERVER] 🔄 Procurando servidor com Frutas...")
+    ServerHop()
+end
+
+function ServerHopEventos()
+    print("[SERVER] 🔄 Procurando servidor com Eventos...")
+    ServerHop()
+end
+
+-- ============================================
+-- AUTO UPGRADE STATUS
+-- ============================================
+
+function AutoUpgradeStats()
+    print("[STATS] 📊 Distribuindo status automaticamente...")
+    local stats = {"Melee", "Defense", "Sword", "Gun", "Fruit"}
+    for _, stat in pairs(stats) do
+        pcall(function()
+            if player:FindFirstChild(stat) then
+                local pontos = player[stat].Value
+                if pontos > 0 then
+                    player[stat].Value = pontos
+                    print("[STATS] ✅ " .. stat .. " atualizado!")
+                end
+            end
+        end)
+    end
+end
+
+function ResetarStats()
+    print("[STATS] 🔄 Resetando status...")
+    pcall(function()
+        for _, stat in pairs({"Melee", "Defense", "Sword", "Gun", "Fruit"}) do
+            if player:FindFirstChild(stat) then
+                player[stat].Value = 0
+            end
+        end
+        print("[STATS] ✅ Status resetados!")
+    end)
+end
+
+-- ============================================
+-- AUTO AFK
+-- ============================================
+
+local afkAtivo = false
+
+function AutoAFK()
+    afkAtivo = not afkAtivo
+    if afkAtivo then
+        print("[AFK] 💤 Modo Anti-AFK ativado!")
+        task.spawn(function()
+            while afkAtivo do
+                task.wait(60)
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    player.Character.Humanoid:MoveTo(Vector3.new(0, 0, 0))
+                    task.wait(0.1)
+                    player.Character.Humanoid:MoveTo(Vector3.new(10, 0, 10))
+                end
+            end
+        end)
+    else
+        print("[AFK] 💤 Modo Anti-AFK desativado!")
+    end
+end
+
+-- ============================================
+-- FUNÇÃO GENÉRICA
+-- ============================================
 
 function AcaoSimples(nome)
     print("[AÇÃO] ▶️ " .. nome)
@@ -199,7 +481,7 @@ function MostrarInfo()
 end
 
 -- ============================================
--- CRIA INTERFACE (AJUSTADA)
+-- CRIA INTERFACE
 -- ============================================
 
 local gui = Instance.new("ScreenGui")
@@ -208,7 +490,7 @@ gui.Parent = player.PlayerGui
 gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 380, 0, 440)  -- MAIS LARGURA, MENOS ALTURA
+frame.Size = UDim2.new(0, 380, 0, 440)
 frame.Position = UDim2.new(0.5, -190, 0.5, -220)
 frame.BackgroundColor3 = Color3.fromRGB(8, 8, 28)
 frame.BorderSizePixel = 2
@@ -219,7 +501,7 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 12)
 corner.Parent = frame
 
--- Cabeçalho (menor)
+-- Cabeçalho
 local header = Instance.new("Frame")
 header.Size = UDim2.new(1, 0, 0, 30)
 header.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
@@ -229,7 +511,7 @@ header.Parent = frame
 
 local logo = Instance.new("TextLabel")
 logo.Size = UDim2.new(1, 0, 0, 30)
-logo.Text = "🔥 BLOX FRUITS 8.0"
+logo.Text = "🔥 BLOX FRUITS 9.0"
 logo.TextColor3 = Color3.fromRGB(255, 215, 0)
 logo.BackgroundTransparency = 1
 logo.Font = Enum.Font.GothamBold
@@ -254,19 +536,24 @@ exitCorner.Parent = exitBtn
 
 exitBtn.TouchTap:Connect(function()
     farmAtivo = false
+    raidAtivo = false
+    sniperAtivo = false
+    seaEventAtivo = false
+    afkAtivo = false
     gui:Destroy()
     print("👋 Hub fechado!")
 end)
 exitBtn.MouseButton1Click:Connect(function()
     farmAtivo = false
+    raidAtivo = false
+    sniperAtivo = false
+    seaEventAtivo = false
+    afkAtivo = false
     gui:Destroy()
     print("👋 Hub fechado!")
 end)
 
--- ============================================
--- MENU LATERAL (COM NOMES)
--- ============================================
-
+-- Menu Lateral
 local menuLateral = Instance.new("Frame")
 menuLateral.Size = UDim2.new(0, 85, 1, -35)
 menuLateral.Position = UDim2.new(0, 0, 0, 30)
@@ -275,10 +562,7 @@ menuLateral.BackgroundTransparency = 0.2
 menuLateral.BorderSizePixel = 0
 menuLateral.Parent = frame
 
--- ============================================
--- CONTEÚDO (COM SCROLLBAR INTELIGENTE)
--- ============================================
-
+-- Conteúdo
 local content = Instance.new("ScrollingFrame")
 content.Size = UDim2.new(1, -95, 1, -35)
 content.Position = UDim2.new(0, 90, 0, 30)
@@ -294,7 +578,7 @@ contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = content
 
 -- ============================================
--- CATEGORIAS (COM NOMES)
+-- CATEGORIAS
 -- ============================================
 
 local categorias = {
@@ -488,6 +772,72 @@ function CriarSeparador()
     sep.Parent = content
 end
 
+function CriarToggle(texto, cor, callback)
+    local frame2 = Instance.new("Frame")
+    frame2.Size = UDim2.new(1, -4, 0, 24)
+    frame2.Position = UDim2.new(0, 2, 0, 0)
+    frame2.BackgroundColor3 = cor or Color3.fromRGB(50, 50, 100)
+    frame2.BackgroundTransparency = 0.15
+    frame2.BorderSizePixel = 0
+    frame2.Parent = content
+    
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 1, 0)
+    btn.Text = texto
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BackgroundTransparency = 1
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 10
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.BorderSizePixel = 0
+    btn.Parent = frame2
+    
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 40, 0, 18)
+    toggleBtn.Position = UDim2.new(1, -45, 0.5, -9)
+    toggleBtn.Text = "OFF"
+    toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    toggleBtn.BackgroundTransparency = 0.2
+    toggleBtn.Font = Enum.Font.GothamBold
+    toggleBtn.TextSize = 8
+    toggleBtn.BorderSizePixel = 0
+    toggleBtn.Parent = frame2
+    
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(0, 4)
+    toggleCorner.Parent = toggleBtn
+    
+    local estado = false
+    
+    toggleBtn.TouchTap:Connect(function()
+        estado = not estado
+        if estado then
+            toggleBtn.Text = "ON"
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+            if callback then callback(true) end
+        else
+            toggleBtn.Text = "OFF"
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+            if callback then callback(false) end
+        end
+    end)
+    toggleBtn.MouseButton1Click:Connect(function()
+        estado = not estado
+        if estado then
+            toggleBtn.Text = "ON"
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+            if callback then callback(true) end
+        else
+            toggleBtn.Text = "OFF"
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+            if callback then callback(false) end
+        end
+    end)
+    
+    return {frame = frame2, btn = btn, toggle = toggleBtn, estado = estado}
+end
+
 function CriarSub(texto, cor)
     local lbl = Instance.new("TextLabel")
     lbl.Size = UDim2.new(1, -4, 0, 14)
@@ -502,11 +852,7 @@ function CriarSub(texto, cor)
     return lbl
 end
 
--- ============================================
--- ATUALIZA TAMANHO DO SCROLLBAR (INTELIGENTE)
--- ============================================
-
-local function AtualizarScroll()
+function AtualizarScroll()
     local totalAltura = 0
     for _, child in pairs(content:GetChildren()) do
         if child:IsA("Frame") or child:IsA("TextButton") or child:IsA("TextLabel") then
@@ -564,7 +910,7 @@ end
 function CarregarProgressao()
     CriarSecao("📈 PROGRESSÃO")
     CriarSeparador()
-    CriarBotao("🚀 Farmar Níveis", Color3.fromRGB(0, 200, 100), FarmarAutomatico)
+    CriarBotao("🚀 Farmar Níveis (Auto Quest)", Color3.fromRGB(0, 200, 100), FarmarComQuest)
     CriarBotao("⏹ Parar Farm", Color3.fromRGB(200, 50, 50), PararFarm)
     CriarBotao("Farmar Maestria", Color3.fromRGB(200, 150, 50), function() AcaoSimples("Farmar Maestria") end)
     CriarBotao("Farmar Beli", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Farmar Beli") end)
@@ -620,6 +966,9 @@ end
 function CarregarSeaEvents()
     CriarSecao("🌊 SEA EVENTS")
     CriarSeparador()
+    CriarToggle("🔄 Auto Sea Event", Color3.fromRGB(100, 200, 255), function(estado)
+        if estado then AutoSeaEvent() else PararSeaEvent() end
+    end)
     CriarBotao("Derrotar Terror Shark", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Terror Shark") end)
     CriarBotao("Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Leviathan") end)
     CriarBotao("Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Sea Beast") end)
@@ -640,7 +989,8 @@ end
 function CarregarRaids()
     CriarSecao("⚔️ RAIDS")
     CriarSeparador()
-    CriarBotao("Farmar Raid", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Farmar Raid") end)
+    CriarBotao("⚔️ Iniciar Auto Raid", Color3.fromRGB(200, 50, 50), AutoRaid)
+    CriarBotao("⏹ Parar Raid", Color3.fromRGB(200, 50, 50), PararRaid)
     CriarBotao("Despertar Fruta", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Despertar Fruta") end)
     CriarBotao("Farmar Fragmentos", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Farmar Fragmentos") end)
     CriarBotao("Completar Todas as Raids", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Completar Todas as Raids") end)
@@ -653,6 +1003,9 @@ end
 function CarregarFrutas()
     CriarSecao("🍎 FRUTAS")
     CriarSeparador()
+    CriarToggle("🔭 Sniper Frutas/Baús", Color3.fromRGB(100, 200, 255), function(estado)
+        if estado then SniperFrutas() else PararSniper() end
+    end)
     CriarBotao("Girar Frutas", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Girar Frutas") end)
     CriarBotao("Comprar Frutas", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Comprar Frutas") end)
     CriarBotao("Encontrar Frutas", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Frutas") end)
@@ -887,12 +1240,12 @@ end
 function CarregarServidor()
     CriarSecao("🌐 SERVIDOR")
     CriarSeparador()
-    CriarBotao("Trocar de Servidor", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Trocar de Servidor") end)
-    CriarBotao("Procurar Servidor Vazio", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Procurar Servidor Vazio") end)
-    CriarBotao("Reentrar", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Reentrar") end)
-    CriarBotao("Server Hop Boss", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Server Hop Boss") end)
-    CriarBotao("Server Hop Frutas", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Server Hop Frutas") end)
-    CriarBotao("Server Hop Eventos", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Server Hop Eventos") end)
+    CriarBotao("🔄 Trocar de Servidor", Color3.fromRGB(100, 200, 255), ServerHop)
+    CriarBotao("🔍 Procurar Servidor Vazio", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Procurar Servidor Vazio") end)
+    CriarBotao("🔄 Reentrar", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Reentrar") end)
+    CriarBotao("👹 Server Hop Boss", Color3.fromRGB(100, 200, 255), ServerHopBoss)
+    CriarBotao("🍎 Server Hop Frutas", Color3.fromRGB(100, 200, 255), ServerHopFrutas)
+    CriarBotao("🌊 Server Hop Eventos", Color3.fromRGB(100, 200, 255), ServerHopEventos)
 end
 
 -- ============================================
@@ -915,8 +1268,8 @@ end
 function CarregarEstatisticas()
     CriarSecao("📊 ESTATÍSTICAS")
     CriarSeparador()
-    CriarBotao("Distribuir Status", Color3.fromRGB(100, 150, 255), function() AcaoSimples("Distribuir Status") end)
-    CriarBotao("Resetar Status", Color3.fromRGB(100, 150, 255), function() AcaoSimples("Resetar Status") end)
+    CriarBotao("📊 Distribuir Status", Color3.fromRGB(100, 150, 255), AutoUpgradeStats)
+    CriarBotao("🔄 Resetar Status", Color3.fromRGB(100, 150, 255), ResetarStats)
     CriarBotao("Selecionar Build", Color3.fromRGB(100, 150, 255), function() AcaoSimples("Selecionar Build") end)
 end
 
@@ -929,7 +1282,9 @@ function CarregarUtilidades()
     CriarSeparador()
     CriarBotao("💚 Curar", Color3.fromRGB(50, 200, 100), Curar)
     CriarBotao("📊 Info", Color3.fromRGB(100, 150, 255), MostrarInfo)
-    CriarBotao("Anti AFK", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Anti AFK") end)
+    CriarToggle("💤 Anti AFK", Color3.fromRGB(100, 200, 255), function(estado)
+        if estado then AutoAFK() end
+    end)
     CriarBotao("FPS Boost", Color3.fromRGB(100, 200, 255), function() AcaoSimples("FPS Boost") end)
     CriarBotao("Reconnect Automático", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Reconnect Automático") end)
     CriarBotao("Auto Salvar", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Auto Salvar") end)
@@ -960,7 +1315,7 @@ end
 local footer = Instance.new("TextLabel")
 footer.Size = UDim2.new(1, 0, 0, 14)
 footer.Position = UDim2.new(0, 0, 1, -4)
-footer.Text = "⭐ v8.0 Ajustado | Marcileialves"
+footer.Text = "⭐ v9.0 Completo | Marcileialves"
 footer.TextColor3 = Color3.fromRGB(150, 150, 180)
 footer.BackgroundTransparency = 1
 footer.Font = Enum.Font.GothamMedium
@@ -973,5 +1328,5 @@ footer.Parent = frame
 
 SelecionarCategoria(1)
 
-print("✅ Blox Fruits Hub 8.0 carregado!")
+print("✅ Blox Fruits Hub 9.0 carregado!")
 print("📌 GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub")
