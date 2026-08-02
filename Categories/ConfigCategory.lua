@@ -4,22 +4,21 @@
 
 local ConfigCategory = {}
 
-function ConfigCategory.Criar(content)
+function ConfigCategory.Criar(content, Config)
     local function criarBotao(texto, cor)
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, 0, 0, 30)
+        btn.Size = UDim2.new(0, 320, 0, 30)
         btn.Text = texto
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.BackgroundColor3 = cor
         btn.BackgroundTransparency = 0.15
         btn.Font = Enum.Font.GothamMedium
-        btn.TextSize = 10
-        btn.TextXAlignment = Enum.TextXAlignment.Left
+        btn.TextSize = 11
         btn.BorderSizePixel = 0
         btn.Parent = content
         
         local btnCorner = Instance.new("UICorner")
-        btnCorner.CornerRadius = UDim.new(0, 4)
+        btnCorner.CornerRadius = UDim.new(0, 6)
         btnCorner.Parent = btn
         
         btn.MouseButton1Click:Connect(function()
@@ -29,28 +28,23 @@ function ConfigCategory.Criar(content)
         return btn
     end
     
-    -- Título
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, 0, 0, 24)
-    lbl.Text = "▸ ⚙️ CONFIG"
-    lbl.TextColor3 = Color3.fromRGB(150, 150, 200)
-    lbl.BackgroundTransparency = 1
-    lbl.Font = Enum.Font.GothamBold
-    lbl.TextSize = 12
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = content
+    local function criarSecao(texto)
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(1, 0, 0, 24)
+        lbl.Text = "▸ " .. texto
+        lbl.TextColor3 = Color3.fromRGB(150, 150, 200)
+        lbl.BackgroundTransparency = 1
+        lbl.Font = Enum.Font.GothamBold
+        lbl.TextSize = 12
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent = content
+        return lbl
+    end
     
-    -- Separador
-    local sep = Instance.new("Frame")
-    sep.Size = UDim2.new(1, -10, 0, 1)
-    sep.Position = UDim2.new(0, 5, 0, 0)
-    sep.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-    sep.BackgroundTransparency = 0.5
-    sep.BorderSizePixel = 0
-    sep.Parent = content
+    criarSecao("⚙️ CONFIG")
     
-    criarBotao("📌 Sobre o Script", Color3.fromRGB(100, 100, 150))
-    criarBotao("🐛 Relatar Bug", Color3.fromRGB(100, 100, 150))
+    criarBotao("📌 Sobre", Color3.fromRGB(100, 100, 150))
+    criarBotao("🐛 Reportar Bug", Color3.fromRGB(100, 100, 150))
 end
 
 return ConfigCategory

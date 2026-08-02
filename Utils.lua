@@ -13,29 +13,16 @@ function Utils.Curar(player)
     end)
 end
 
-function Utils.MostrarInfo(player)
+function Utils.MostrarInfo(player, Detector, Farm)
     Detector.Atualizar(player)
-    local info = Detector.GetInfo()
-    local ilha = Farm.EncontrarIlha(player)
-    
     print("📊 INFORMAÇÕES:")
     print("  👤 " .. player.Name)
-    print("  🎯 Nível: " .. info.Nivel)
-    print("  💚 Vida: " .. info.Vida .. "/" .. info.MaxVida)
-    print("  💰 Beli: " .. info.Beli)
-    print("  💎 Fragmentos: " .. info.Fragmentos)
-    print("  👤 Raça: " .. info.Raça)
-    print("  🍎 Fruta: " .. info.Fruta)
-    print("  ⚔️ Arma: " .. info.Arma)
-    print("  🥊 Maestria: " .. info.Maestria)
+    print("  🎯 Nível: " .. Detector.Nivel)
+    print("  💚 Vida: " .. Detector.Vida .. "/" .. Detector.MaxVida)
+    print("  💰 Beli: " .. Detector.Beli)
+    print("  🥊 Maestria: " .. Detector.Maestria .. "/600")
     if Farm.Ativo then
-        print("  ⚡ Farmando: SIM (" .. Farm.Kills .. " kills)")
-        print("  ⚡ KPM: " .. string.format("%.1f", Farm.KillsPorMinuto))
-    else
-        print("  ⚡ Farmando: NÃO")
-    end
-    if ilha then
-        print("  📍 Ilha: " .. ilha.nome)
+        print("  ⚔️ Kills: " .. Farm.Kills)
     end
 end
 
