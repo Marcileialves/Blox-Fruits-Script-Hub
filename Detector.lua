@@ -1,21 +1,61 @@
 --[[
-    SISTEMA DE DETECÇÃO DO JOGADOR
+    CATEGORIA FARM
 ]]
 
-local Detector = {}
+local FarmCategory = {}
 
-function Detector.Atualizar(player)
-    pcall(function()
-        Detector.Nivel = player.Level or player:GetAttribute("Level") or 0
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            Detector.Vida = math.floor(player.Character.Humanoid.Health)
-            Detector.MaxVida = player.Character.Humanoid.MaxHealth
-        end
-        if player:FindFirstChild("Beli") then
-            Detector.Beli = player.Beli.Value or 0
-        end
-        Detector.Maestria = math.random(1, 600)
+function FarmCategory.Criar(content, player, Farm, AntiBan, Utils, Config)
+    local function criarBotao(texto, cor, callback)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(0, 320, 0, 36)
+        btn.Text = texto
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.BackgroundColor3 = cor
+        btn.BackgroundTransparency = 0.15
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 12
+        btn.BorderSizePixel = 1
+        btn.BorderColor3 = cor
+        btn.Parent = content
+        
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 8)
+        btnCorner.Parent = btn
+        
+        btn.MouseButton1Click:Connect(function()
+            print("▶️ " .. texto)
+            if callback then pcall(callback) end
+        end)
+        
+        return btn
+    end
+    
+    local function criarSecao(texto)
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(1, 0, 0, 24)
+        lbl.Text = "▸ " .. texto
+        lbl.TextColor3 = Color3.fromRGB(255, 215, 0)
+        lbl.BackgroundTransparency = 1
+        lbl.Font = Enum.Font.GothamBold
+        lbl.TextSize = 12
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent = content
+        return lbl
+    end
+    
+    criarSecao("⚡ CONTROLES")
+    
+    criarBotao("⚡ FARMAR NÍVEL MÁXIMO", Color3.fromRGB(0, 200, 100), function()
+        Farm.Iniciar(player, Detector, AntiBan, Config)
+    end)
+    
+    criarBotao("⏹ PARAR FARM", Color3.fromRGB(255, 80, 80), Farm.Parar)
+    criarBotao("💚 CURAR", Color3.fromRGB(50, 200, 100), function()
+        Utils.Curar(player)
+    end)
+    criarBotao("📊 INFORMAÇÕES", Color3.fromRGB(100, 150, 255), function()
+        Utils.MostrarInfo(player, Detector, Farm)
     end)
 end
 
-return Detector
+return FarmCategory

@@ -44,7 +44,7 @@ function Interface.Criar(player, Detector, Config)
     local versao = Instance.new("TextLabel")
     versao.Size = UDim2.new(0, 60, 0, 20)
     versao.Position = UDim2.new(1, -65, 0, 4)
-    versao.Text = "v" .. Config.Versao
+    versao.Text = "v" .. (Config.Versao or "12.0")
     versao.TextColor3 = Color3.fromRGB(180, 180, 220)
     versao.BackgroundTransparency = 1
     versao.Font = Enum.Font.GothamMedium

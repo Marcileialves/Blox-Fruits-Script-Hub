@@ -4,7 +4,7 @@
 
 local FarmCategory = {}
 
-function FarmCategory.Criar(content, player, Farm, AntiBan, Utils)
+function FarmCategory.Criar(content, player, Farm, AntiBan, Utils, Config)
     local function criarBotao(texto, cor, callback)
         local btn = Instance.new("TextButton")
         btn.Size = UDim2.new(0, 320, 0, 36)
@@ -46,14 +46,15 @@ function FarmCategory.Criar(content, player, Farm, AntiBan, Utils)
     criarSecao("⚡ CONTROLES")
     
     criarBotao("⚡ FARMAR NÍVEL MÁXIMO", Color3.fromRGB(0, 200, 100), function()
-        Farm.Iniciar(player, require(script.Parent.Parent.Detector), require(script.Parent.Parent.AntiBan), require(script.Parent.Parent.Config))
+        Farm.Iniciar(player, Detector, AntiBan, Config)
     end)
+    
     criarBotao("⏹ PARAR FARM", Color3.fromRGB(255, 80, 80), Farm.Parar)
     criarBotao("💚 CURAR", Color3.fromRGB(50, 200, 100), function()
         Utils.Curar(player)
     end)
     criarBotao("📊 INFORMAÇÕES", Color3.fromRGB(100, 150, 255), function()
-        Utils.MostrarInfo(player, require(script.Parent.Parent.Detector), Farm)
+        Utils.MostrarInfo(player, Detector, Farm)
     end)
 end
 

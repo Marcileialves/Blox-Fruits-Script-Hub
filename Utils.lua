@@ -20,6 +20,8 @@ function Utils.MostrarInfo(player, Detector, Farm)
     print("  🎯 Nível: " .. Detector.Nivel)
     print("  💚 Vida: " .. Detector.Vida .. "/" .. Detector.MaxVida)
     print("  💰 Beli: " .. Detector.Beli)
+    print("  💎 Fragmentos: " .. (Detector.Fragmentos or 0))
+    print("  👤 Raça: " .. (Detector.Raça or "Desconhecida"))
     print("  🥊 Maestria: " .. Detector.Maestria .. "/600")
     if Farm.Ativo then
         print("  ⚔️ Kills: " .. Farm.Kills)
