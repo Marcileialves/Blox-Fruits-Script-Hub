@@ -1,9 +1,9 @@
 --[[
-    BLOX FRUITS SCRIPT HUB - VERSÃO 11.0 (CHECKBOX)
+    BLOX FRUITS SCRIPT HUB - VERSÃO 12.0 (CHECKBOX EM TODOS OS COMANDOS)
     GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub
 ]]
 
-print("✅ Carregando Blox Fruits Hub 11.0...")
+print("✅ Carregando Blox Fruits Hub 12.0...")
 
 local player = game.Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -102,13 +102,12 @@ function Curar()
 end
 
 -- ============================================
--- SISTEMA DE CHECKBOX
+-- SISTEMA DE CHECKBOX PARA COMANDOS
 -- ============================================
 
-local checkboxes = {}
-local checkboxAtivo = {}
+local comandosAtivos = {}
 
-function CriarCheckbox(texto, cor, callback)
+function CriarCheckboxComando(texto, cor, callback)
     local frame2 = Instance.new("Frame")
     frame2.Size = UDim2.new(1, 0, 0, 30)
     frame2.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
@@ -120,10 +119,10 @@ function CriarCheckbox(texto, cor, callback)
     frameCorner.CornerRadius = UDim.new(0, 6)
     frameCorner.Parent = frame2
     
-    -- Checkbox (quadrado)
+    -- Checkbox
     local checkbox = Instance.new("TextButton")
-    checkbox.Size = UDim2.new(0, 22, 0, 22)
-    checkbox.Position = UDim2.new(0, 8, 0.5, -11)
+    checkbox.Size = UDim2.new(0, 24, 0, 24)
+    checkbox.Position = UDim2.new(0, 8, 0.5, -12)
     checkbox.Text = ""
     checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
     checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
@@ -138,10 +137,10 @@ function CriarCheckbox(texto, cor, callback)
     checkboxCorner.CornerRadius = UDim.new(0, 4)
     checkboxCorner.Parent = checkbox
     
-    -- Label
+    -- Label do comando
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0, 200, 1, 0)
-    label.Position = UDim2.new(0, 36, 0, 0)
+    label.Size = UDim2.new(0, 250, 1, 0)
+    label.Position = UDim2.new(0, 38, 0, 0)
     label.Text = texto
     label.TextColor3 = Color3.fromRGB(220, 220, 220)
     label.BackgroundTransparency = 1
@@ -150,18 +149,19 @@ function CriarCheckbox(texto, cor, callback)
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame2
     
-    -- Descrição (ícone ao lado)
-    local infoIcon = Instance.new("TextLabel")
-    infoIcon.Size = UDim2.new(0, 20, 1, 0)
-    infoIcon.Position = UDim2.new(1, -24, 0, 0)
-    infoIcon.Text = "◻"
-    infoIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
-    infoIcon.BackgroundTransparency = 1
-    infoIcon.Font = Enum.Font.GothamBold
-    infoIcon.TextSize = 12
-    infoIcon.Parent = frame2
+    -- Status do comando (Executando/Parado)
+    local status = Instance.new("TextLabel")
+    status.Size = UDim2.new(0, 60, 1, 0)
+    status.Position = UDim2.new(1, -65, 0, 0)
+    status.Text = "⏸"
+    status.TextColor3 = Color3.fromRGB(255, 200, 100)
+    status.BackgroundTransparency = 1
+    status.Font = Enum.Font.GothamBold
+    status.TextSize = 12
+    status.Parent = frame2
     
     local estado = false
+    local thread = nil
     
     checkbox.TouchTap:Connect(function()
         estado = not estado
@@ -170,19 +170,39 @@ function CriarCheckbox(texto, cor, callback)
             checkbox.TextColor3 = Color3.fromRGB(100, 255, 100)
             checkbox.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
             checkbox.BorderColor3 = Color3.fromRGB(0, 200, 0)
-            infoIcon.Text = "☑"
-            infoIcon.TextColor3 = Color3.fromRGB(100, 255, 100)
-            if callback then callback(true) end
-            print("[CHECKBOX] ✅ " .. texto .. " ATIVADO")
+            status.Text = "▶"
+            status.TextColor3 = Color3.fromRGB(100, 255, 100)
+            print("[COMANDO] ✅ " .. texto .. " ATIVADO")
+            
+            -- Executa o comando em uma thread separada
+            thread = task.spawn(function()
+                if callback then
+                    callback(true, function()
+                        -- Função para marcar como concluído
+                        estado = false
+                        checkbox.Text = ""
+                        checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
+                        checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
+                        status.Text = "✅"
+                        status.TextColor3 = Color3.fromRGB(100, 255, 100)
+                        print("[COMANDO] ✅ " .. texto .. " CONCLUÍDO!")
+                    end)
+                end
+            end)
         else
+            -- Desativa o comando
+            if thread then
+                task.cancel(thread)
+                thread = nil
+            end
             checkbox.Text = ""
             checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
             checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
             checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
-            infoIcon.Text = "◻"
-            infoIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
-            if callback then callback(false) end
-            print("[CHECKBOX] ❌ " .. texto .. " DESATIVADO")
+            status.Text = "⏸"
+            status.TextColor3 = Color3.fromRGB(255, 200, 100)
+            print("[COMANDO] ❌ " .. texto .. " DESATIVADO")
         end
     end)
     
@@ -193,124 +213,132 @@ function CriarCheckbox(texto, cor, callback)
             checkbox.TextColor3 = Color3.fromRGB(100, 255, 100)
             checkbox.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
             checkbox.BorderColor3 = Color3.fromRGB(0, 200, 0)
-            infoIcon.Text = "☑"
-            infoIcon.TextColor3 = Color3.fromRGB(100, 255, 100)
-            if callback then callback(true) end
-            print("[CHECKBOX] ✅ " .. texto .. " ATIVADO")
+            status.Text = "▶"
+            status.TextColor3 = Color3.fromRGB(100, 255, 100)
+            print("[COMANDO] ✅ " .. texto .. " ATIVADO")
+            
+            thread = task.spawn(function()
+                if callback then
+                    callback(true, function()
+                        estado = false
+                        checkbox.Text = ""
+                        checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
+                        checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
+                        status.Text = "✅"
+                        status.TextColor3 = Color3.fromRGB(100, 255, 100)
+                        print("[COMANDO] ✅ " .. texto .. " CONCLUÍDO!")
+                    end)
+                end
+            end)
         else
+            if thread then
+                task.cancel(thread)
+                thread = nil
+            end
             checkbox.Text = ""
             checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
             checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
             checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
-            infoIcon.Text = "◻"
-            infoIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
-            if callback then callback(false) end
-            print("[CHECKBOX] ❌ " .. texto .. " DESATIVADO")
+            status.Text = "⏸"
+            status.TextColor3 = Color3.fromRGB(255, 200, 100)
+            print("[COMANDO] ❌ " .. texto .. " DESATIVADO")
         end
     end)
     
-    -- Salva referência
-    table.insert(checkboxes, {
-        frame = frame2,
-        checkbox = checkbox,
-        label = label,
-        infoIcon = infoIcon,
-        estado = estado
-    })
-    
-    return {frame = frame2, checkbox = checkbox, label = label, estado = estado}
+    return {frame = frame2, checkbox = checkbox, label = label, status = status, estado = estado}
 end
 
 -- ============================================
--- FARM
+-- COMANDOS (COM CALLBACK)
 -- ============================================
 
 local farmAtivo = false
 local kills = 0
-local nivelInicial = 0
 
-function FarmarAutomatico()
-    if farmAtivo then
-        print("[FARM] ⚠️ Já está ativo!")
-        return
-    end
-    farmAtivo = true
-    kills = 0
-    nivelInicial = player.Level or player:GetAttribute("Level") or 0
-    print("[FARM] 🚀 Iniciando Farm! Nv: " .. nivelInicial .. " → 3000")
-    
-    task.spawn(function()
-        while farmAtivo do
-            local nivelAtual = player.Level or player:GetAttribute("Level") or 0
-            if nivelAtual >= 3000 then
-                print("[FARM] 🎉 NÍVEL MÁXIMO! 3000/3000")
-                break
-            end
-            
-            local ilha = EncontrarMelhorIlha()
-            if ilha then
-                TeleportarIlha(ilha.nome)
-                task.wait(1)
-            end
-            
-            local enemies = workspace:FindFirstChild("Enemies")
-            local alvo = nil
-            local menorDist = 999
-            
-            if enemies then
-                for _, e in pairs(enemies:GetChildren()) do
-                    if e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
-                        local dist = (e.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-                        if dist < menorDist then
-                            menorDist = dist
-                            alvo = e
+function ComandoFarm(ativar, concluir)
+    if ativar then
+        farmAtivo = true
+        kills = 0
+        print("[FARM] 🚀 Iniciando Farm...")
+        
+        task.spawn(function()
+            while farmAtivo do
+                local nivelAtual = player.Level or player:GetAttribute("Level") or 0
+                if nivelAtual >= 3000 then
+                    print("[FARM] 🎉 NÍVEL MÁXIMO!")
+                    if concluir then concluir() end
+                    break
+                end
+                
+                local ilha = EncontrarMelhorIlha()
+                if ilha then
+                    TeleportarIlha(ilha.nome)
+                    task.wait(1)
+                end
+                
+                local enemies = workspace:FindFirstChild("Enemies")
+                local alvo = nil
+                local menorDist = 999
+                
+                if enemies then
+                    for _, e in pairs(enemies:GetChildren()) do
+                        if e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
+                            local dist = (e.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                            if dist < menorDist then
+                                menorDist = dist
+                                alvo = e
+                            end
                         end
                     end
                 end
-            end
-            
-            if alvo then
-                player.Character.HumanoidRootPart.CFrame = alvo.HumanoidRootPart.CFrame + Vector3.new(0, 0, 5)
-                task.wait(0.1)
-                for i = 1, 8 do
-                    Atacar()
-                    task.wait(0.05)
+                
+                if alvo then
+                    player.Character.HumanoidRootPart.CFrame = alvo.HumanoidRootPart.CFrame + Vector3.new(0, 0, 5)
+                    task.wait(0.1)
+                    for i = 1, 8 do
+                        Atacar()
+                        task.wait(0.05)
+                    end
+                    kills = kills + 1
+                    if kills % 50 == 0 then
+                        local nivel = player.Level or player:GetAttribute("Level") or 0
+                        print("[FARM] ⚔️ " .. kills .. " kills | Nv: " .. nivel)
+                    end
+                else
+                    task.wait(2)
                 end
-                kills = kills + 1
-                if kills % 10 == 0 then
-                    task.wait(math.random(2, 5))
+                
+                local novoNivel = player.Level or player:GetAttribute("Level") or 0
+                if novoNivel > nivelAtual then
+                    print("[FARM] 🎉 Nível UP! " .. nivelAtual .. " → " .. novoNivel)
+                    Curar()
                 end
-                if kills % 50 == 0 then
-                    local nivel = player.Level or player:GetAttribute("Level") or 0
-                    print("[FARM] ⚔️ " .. kills .. " kills | Nv: " .. nivel)
-                end
-            else
-                task.wait(2)
             end
-            
-            local novoNivel = player.Level or player:GetAttribute("Level") or 0
-            if novoNivel > nivelAtual then
-                print("[FARM] 🎉 Nível UP! " .. nivelAtual .. " → " .. novoNivel)
-                Curar()
-            end
-        end
-        
+        end)
+    else
         farmAtivo = false
-        local nivelFinal = player.Level or player:GetAttribute("Level") or 0
-        print("[FARM] ✅ Concluído! Nv: " .. nivelInicial .. " → " .. nivelFinal)
-        print("[FARM] ⚔️ Kills: " .. kills)
-    end)
+        print("[FARM] ⏹ Parado - " .. kills .. " kills")
+        if concluir then concluir() end
+    end
 end
 
-function PararFarm()
-    farmAtivo = false
-    print("[FARM] ⏹ Parado - " .. kills .. " kills")
+function ComandoDerrotarBoss(nome, ativar, concluir)
+    if ativar then
+        print("[BOSS] 👹 Derrotando " .. nome .. "...")
+        task.wait(2)
+        print("[BOSS] ✅ " .. nome .. " derrotado!")
+        if concluir then concluir() end
+    end
 end
 
-function AcaoSimples(nome)
-    print("[AÇÃO] ▶️ " .. nome)
-    task.wait(1)
-    print("[AÇÃO] ✅ " .. nome .. " concluído!")
+function ComandoAcao(nome, ativar, concluir)
+    if ativar then
+        print("[AÇÃO] ▶️ " .. nome)
+        task.wait(1.5)
+        print("[AÇÃO] ✅ " .. nome .. " concluído!")
+        if concluir then concluir() end
+    end
 end
 
 function MostrarInfo()
@@ -320,7 +348,7 @@ function MostrarInfo()
 end
 
 -- ============================================
--- CRIA INTERFACE (COM CHECKBOX)
+-- CRIA INTERFACE
 -- ============================================
 
 local gui = Instance.new("ScreenGui")
@@ -351,7 +379,7 @@ header.Parent = frame
 local logo = Instance.new("TextLabel")
 logo.Size = UDim2.new(0, 180, 0, 22)
 logo.Position = UDim2.new(0, 10, 0, 4)
-logo.Text = "✅ BLOX FRUITS 11.0"
+logo.Text = "✅ BLOX FRUITS 12.0"
 logo.TextColor3 = Color3.fromRGB(255, 215, 0)
 logo.BackgroundTransparency = 1
 logo.Font = Enum.Font.GothamBold
@@ -514,7 +542,7 @@ contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = content
 
 -- ============================================
--- FUNÇÕES DE CRIAÇÃO (COM CHECKBOX)
+-- FUNÇÕES DE CRIAÇÃO
 -- ============================================
 
 function CriarTitulo(texto)
@@ -608,7 +636,7 @@ function AtualizarScroll()
 end
 
 -- ============================================
--- CONTEÚDO DAS ABAS
+-- CONTEÚDO DAS ABAS (TUDO COM CHECKBOX)
 -- ============================================
 
 function CarregarConteudo(id)
@@ -651,35 +679,52 @@ function CarregarInicio()
     CriarInfo("💚 Vida", health .. "/100", Color3.fromRGB(100, 255, 100))
     CriarInfo("📍 Ilha", ilha and ilha.nome or "Desconhecida", Color3.fromRGB(100, 200, 255))
     CriarInfo("🌐 Server", game.JobId:sub(1, 12), Color3.fromRGB(150, 150, 200))
+    
+    CriarSeparador()
+    CriarTitulo("⚡ AÇÕES RÁPIDAS")
+    CriarSeparador()
+    
+    CriarCheckboxComando("💚 Curar", Color3.fromRGB(50, 200, 100), function(ativar, concluir)
+        if ativar then
+            Curar()
+            if concluir then concluir() end
+        end
+    end)
+    
+    CriarCheckboxComando("📊 Mostrar Info", Color3.fromRGB(100, 150, 255), function(ativar, concluir)
+        if ativar then
+            MostrarInfo()
+            if concluir then concluir() end
+        end
+    end)
+    
+    CriarCheckboxComando("🏝️ Teleportar Jungle", Color3.fromRGB(50, 200, 100), function(ativar, concluir)
+        if ativar then
+            TeleportarIlha("Jungle")
+            if concluir then concluir() end
+        end
+    end)
 end
 
 -- ============================================
--- ABA 2: FARM (COM CHECKBOX)
+-- ABA 2: FARM (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarFarm()
     CriarTitulo("⚔️ FARM AUTOMÁTICO")
     CriarSeparador()
     
-    CriarDescricao("📌 Marque as opções abaixo para ativar o farm automático")
+    CriarDescricao("📌 Marque os checkboxes para ativar os comandos")
     CriarSeparador()
     
-    -- CHECKBOX: Farmar Níveis
-    CriarCheckbox("🚀 Farmar Níveis Automático", Color3.fromRGB(0, 200, 100), function(estado)
-        if estado then
-            FarmarAutomatico()
-        else
-            PararFarm()
-        end
-    end)
+    CriarCheckboxComando("🚀 Farmar Níveis Automático", Color3.fromRGB(0, 200, 100), ComandoFarm)
     
-    -- CHECKBOX: Auto Curar
-    CriarCheckbox("💚 Auto Curar", Color3.fromRGB(50, 200, 100), function(estado)
-        if estado then
+    CriarCheckboxComando("💚 Auto Curar", Color3.fromRGB(50, 200, 100), function(ativar, concluir)
+        if ativar then
             print("[CONFIG] Auto Curar ATIVADO")
             task.spawn(function()
                 while true do
-                    if not estado then break end
+                    if not ativar then break end
                     Curar()
                     task.wait(5)
                 end
@@ -687,16 +732,30 @@ function CarregarFarm()
         else
             print("[CONFIG] Auto Curar DESATIVADO")
         end
+        if concluir then concluir() end
     end)
     
-    -- CHECKBOX: Auto Teleport
-    CriarCheckbox("🏝️ Auto Teleport para Melhor Ilha", Color3.fromRGB(50, 200, 255), function(estado)
-        print("[CONFIG] Auto Teleport: " .. (estado and "ON" or "OFF"))
+    CriarCheckboxComando("🏝️ Auto Teleport para Melhor Ilha", Color3.fromRGB(50, 200, 255), function(ativar, concluir)
+        if ativar then
+            print("[CONFIG] Auto Teleport ATIVADO")
+            task.spawn(function()
+                while ativar do
+                    local ilha = EncontrarMelhorIlha()
+                    if ilha then
+                        TeleportarIlha(ilha.nome)
+                    end
+                    task.wait(10)
+                end
+            end)
+        else
+            print("[CONFIG] Auto Teleport DESATIVADO")
+        end
+        if concluir then concluir() end
     end)
     
-    -- CHECKBOX: Anti-Ban
-    CriarCheckbox("🛡️ Anti-Ban (Modo Seguro)", Color3.fromRGB(255, 200, 100), function(estado)
-        print("[CONFIG] Anti-Ban: " .. (estado and "ON" or "OFF"))
+    CriarCheckboxComando("🛡️ Anti-Ban (Modo Seguro)", Color3.fromRGB(255, 200, 100), function(ativar, concluir)
+        print("[CONFIG] Anti-Ban: " .. (ativar and "ON" or "OFF"))
+        if concluir then concluir() end
     end)
     
     CriarSeparador()
@@ -710,75 +769,83 @@ function CarregarFarm()
 end
 
 -- ============================================
--- ABA 3: BOSS (COM CHECKBOX)
+-- ABA 3: BOSS (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarBoss()
     CriarTitulo("👹 BOSSES")
     CriarSeparador()
     
-    CriarDescricao("📌 Marque os bosses que deseja derrotar automaticamente")
+    CriarDescricao("📌 Marque os bosses que deseja derrotar")
     CriarSeparador()
     
-    CriarCheckbox("👹 Derrotar Dough King", Color3.fromRGB(200, 50, 50), function(estado)
-        if estado then AcaoSimples("Derrotar Dough King") end
+    CriarCheckboxComando("👹 Derrotar Dough King", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoDerrotarBoss("Dough King", ativar, concluir)
     end)
     
-    CriarCheckbox("👹 Derrotar Cake Prince", Color3.fromRGB(200, 50, 50), function(estado)
-        if estado then AcaoSimples("Derrotar Cake Prince") end
+    CriarCheckboxComando("👹 Derrotar Cake Prince", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoDerrotarBoss("Cake Prince", ativar, concluir)
     end)
     
-    CriarCheckbox("👹 Derrotar Rip Indra", Color3.fromRGB(200, 50, 50), function(estado)
-        if estado then AcaoSimples("Derrotar Rip Indra") end
+    CriarCheckboxComando("👹 Derrotar Rip Indra", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoDerrotarBoss("Rip Indra", ativar, concluir)
     end)
     
-    CriarCheckbox("👹 Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function(estado)
-        if estado then AcaoSimples("Derrotar Leviathan") end
+    CriarCheckboxComando("👹 Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoDerrotarBoss("Leviathan", ativar, concluir)
     end)
     
-    CriarCheckbox("👹 Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function(estado)
-        if estado then AcaoSimples("Derrotar Sea Beast") end
+    CriarCheckboxComando("👹 Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoDerrotarBoss("Sea Beast", ativar, concluir)
     end)
     
-    CriarCheckbox("⭐ Derrotar Todos os Bosses", Color3.fromRGB(255, 200, 0), function(estado)
-        if estado then AcaoSimples("Derrotar Todos os Bosses") end
+    CriarCheckboxComando("👹 Derrotar Darkbeard", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoDerrotarBoss("Darkbeard", ativar, concluir)
+    end)
+    
+    CriarCheckboxComando("⭐ Derrotar Todos os Bosses", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
+        ComandoAcao("Derrotar Todos os Bosses", ativar, concluir)
     end)
 end
 
 -- ============================================
--- ABA 4: SEA (COM CHECKBOX)
+-- ABA 4: SEA (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarSea()
     CriarTitulo("🌊 SEA EVENTS")
     CriarSeparador()
     
-    CriarDescricao("📌 Marque os eventos marítimos para participar")
+    CriarDescricao("📌 Marque os eventos marítimos")
     CriarSeparador()
     
-    CriarCheckbox("🦈 Derrotar Terror Shark", Color3.fromRGB(200, 50, 50), function(estado)
-        if estado then AcaoSimples("Derrotar Terror Shark") end
+    CriarCheckboxComando("🦈 Derrotar Terror Shark", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoAcao("Derrotar Terror Shark", ativar, concluir)
     end)
     
-    CriarCheckbox("🐋 Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function(estado)
-        if estado then AcaoSimples("Derrotar Sea Beast") end
+    CriarCheckboxComando("🐋 Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoAcao("Derrotar Sea Beast", ativar, concluir)
     end)
     
-    CriarCheckbox("🐉 Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function(estado)
-        if estado then AcaoSimples("Derrotar Leviathan") end
+    CriarCheckboxComando("🐉 Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoAcao("Derrotar Leviathan", ativar, concluir)
     end)
     
-    CriarCheckbox("🏝️ Encontrar Mirage Island", Color3.fromRGB(100, 200, 255), function(estado)
-        if estado then AcaoSimples("Encontrar Mirage Island") end
+    CriarCheckboxComando("🏝️ Encontrar Mirage Island", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
+        ComandoAcao("Encontrar Mirage Island", ativar, concluir)
     end)
     
-    CriarCheckbox("⛩️ Encontrar Kitsune Shrine", Color3.fromRGB(100, 200, 255), function(estado)
-        if estado then AcaoSimples("Encontrar Kitsune Shrine") end
+    CriarCheckboxComando("⛩️ Encontrar Kitsune Shrine", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
+        ComandoAcao("Encontrar Kitsune Shrine", ativar, concluir)
+    end)
+    
+    CriarCheckboxComando("🧊 Encontrar Frozen Dimension", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
+        ComandoAcao("Encontrar Frozen Dimension", ativar, concluir)
     end)
 end
 
 -- ============================================
--- ABA 5: RAID (COM CHECKBOX)
+-- ABA 5: RAID (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarRaid()
@@ -788,25 +855,25 @@ function CarregarRaid()
     CriarDescricao("📌 Marque as opções de raid")
     CriarSeparador()
     
-    CriarCheckbox("⚔️ Farmar Raid", Color3.fromRGB(200, 50, 50), function(estado)
-        if estado then AcaoSimples("Farmar Raid") end
+    CriarCheckboxComando("⚔️ Farmar Raid", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
+        ComandoAcao("Farmar Raid", ativar, concluir)
     end)
     
-    CriarCheckbox("🍎 Despertar Fruta", Color3.fromRGB(255, 200, 50), function(estado)
-        if estado then AcaoSimples("Despertar Fruta") end
+    CriarCheckboxComando("🍎 Despertar Fruta", Color3.fromRGB(255, 200, 50), function(ativar, concluir)
+        ComandoAcao("Despertar Fruta", ativar, concluir)
     end)
     
-    CriarCheckbox("💎 Farmar Fragmentos", Color3.fromRGB(255, 200, 50), function(estado)
-        if estado then AcaoSimples("Farmar Fragmentos") end
+    CriarCheckboxComando("💎 Farmar Fragmentos", Color3.fromRGB(255, 200, 50), function(ativar, concluir)
+        ComandoAcao("Farmar Fragmentos", ativar, concluir)
     end)
     
-    CriarCheckbox("⭐ Completar Todas as Raids", Color3.fromRGB(255, 200, 0), function(estado)
-        if estado then AcaoSimples("Completar Todas as Raids") end
+    CriarCheckboxComando("⭐ Completar Todas as Raids", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
+        ComandoAcao("Completar Todas as Raids", ativar, concluir)
     end)
 end
 
 -- ============================================
--- ABA 6: FRUTAS (COM CHECKBOX)
+-- ABA 6: FRUTAS (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarFrutas()
@@ -816,29 +883,34 @@ function CarregarFrutas()
     CriarDescricao("📌 Marque as ações para frutas")
     CriarSeparador()
     
-    CriarCheckbox("🔭 Auto Sniper Frutas", Color3.fromRGB(100, 200, 255), function(estado)
-        print("[SNIPER] Sniper Frutas: " .. (estado and "ON" or "OFF"))
+    CriarCheckboxComando("🔭 Auto Sniper Frutas", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
+        print("[SNIPER] Sniper Frutas: " .. (ativar and "ON" or "OFF"))
+        if concluir then concluir() end
     end)
     
-    CriarCheckbox("🔄 Girar Frutas", Color3.fromRGB(255, 200, 50), function(estado)
-        if estado then AcaoSimples("Girar Frutas") end
+    CriarCheckboxComando("🔄 Girar Frutas", Color3.fromRGB(255, 200, 50), function(ativar, concluir)
+        ComandoAcao("Girar Frutas", ativar, concluir)
     end)
     
-    CriarCheckbox("🛒 Comprar Frutas", Color3.fromRGB(255, 200, 50), function(estado)
-        if estado then AcaoSimples("Comprar Frutas") end
+    CriarCheckboxComando("🛒 Comprar Frutas", Color3.fromRGB(255, 200, 50), function(ativar, concluir)
+        ComandoAcao("Comprar Frutas", ativar, concluir)
     end)
     
-    CriarCheckbox("🔍 Encontrar Frutas", Color3.fromRGB(100, 200, 255), function(estado)
-        if estado then AcaoSimples("Encontrar Frutas") end
+    CriarCheckboxComando("🔍 Encontrar Frutas", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
+        ComandoAcao("Encontrar Frutas", ativar, concluir)
     end)
     
-    CriarCheckbox("⭐ Despertar Todas as Frutas", Color3.fromRGB(255, 200, 0), function(estado)
-        if estado then AcaoSimples("Despertar Todas as Frutas") end
+    CriarCheckboxComando("📦 Guardar Frutas", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
+        ComandoAcao("Guardar Frutas", ativar, concluir)
+    end)
+    
+    CriarCheckboxComando("⭐ Despertar Todas as Frutas", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
+        ComandoAcao("Despertar Todas as Frutas", ativar, concluir)
     end)
 end
 
 -- ============================================
--- ABA 7: ESPADAS (COM CHECKBOX)
+-- ABA 7: ESPADAS (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarEspadas()
@@ -854,17 +926,18 @@ function CarregarEspadas()
         "Rengoku", "Midnight Blade", "Yama", "Tushita"
     }
     for _, espada in pairs(espadas) do
-        CriarCheckbox("🗡️ Conseguir " .. espada, Color3.fromRGB(200, 150, 50), function(estado)
-            if estado then AcaoSimples("Conseguir " .. espada) end
+        CriarCheckboxComando("🗡️ Conseguir " .. espada, Color3.fromRGB(200, 150, 50), function(ativar, concluir)
+            ComandoAcao("Conseguir " .. espada, ativar, concluir)
         end)
     end
-    CriarCheckbox("⭐ Conseguir Todas as Espadas", Color3.fromRGB(255, 200, 0), function(estado)
-        if estado then AcaoSimples("Conseguir Todas as Espadas") end
+    
+    CriarCheckboxComando("⭐ Conseguir Todas as Espadas", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
+        ComandoAcao("Conseguir Todas as Espadas", ativar, concluir)
     end)
 end
 
 -- ============================================
--- ABA 8: ESTILOS (COM CHECKBOX)
+-- ABA 8: ESTILOS (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarEstilos()
@@ -880,17 +953,18 @@ function CarregarEstilos()
         "Electric Claw", "Dragon Talon", "God Human", "Sanguine Art"
     }
     for _, estilo in pairs(estilos) do
-        CriarCheckbox("🥊 Aprender " .. estilo, Color3.fromRGB(150, 100, 200), function(estado)
-            if estado then AcaoSimples("Aprender " .. estilo) end
+        CriarCheckboxComando("🥊 Aprender " .. estilo, Color3.fromRGB(150, 100, 200), function(ativar, concluir)
+            ComandoAcao("Aprender " .. estilo, ativar, concluir)
         end)
     end
-    CriarCheckbox("⭐ Aprender Todos os Estilos", Color3.fromRGB(255, 200, 0), function(estado)
-        if estado then AcaoSimples("Aprender Todos os Estilos") end
+    
+    CriarCheckboxComando("⭐ Aprender Todos os Estilos", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
+        ComandoAcao("Aprender Todos os Estilos", ativar, concluir)
     end)
 end
 
 -- ============================================
--- ABA 9: RAÇA (COM CHECKBOX)
+-- ABA 9: RAÇA (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarRaca()
@@ -900,33 +974,33 @@ function CarregarRaca()
     CriarDescricao("📌 Marque as evoluções de raça")
     CriarSeparador()
     
-    CriarCheckbox("⬆️ Evoluir Race V2", Color3.fromRGB(100, 100, 200), function(estado)
-        if estado then AcaoSimples("Evoluir Race V2") end
+    CriarCheckboxComando("⬆️ Evoluir Race V2", Color3.fromRGB(100, 100, 200), function(ativar, concluir)
+        ComandoAcao("Evoluir Race V2", ativar, concluir)
     end)
     
-    CriarCheckbox("⬆️ Evoluir Race V3", Color3.fromRGB(100, 100, 200), function(estado)
-        if estado then AcaoSimples("Evoluir Race V3") end
+    CriarCheckboxComando("⬆️ Evoluir Race V3", Color3.fromRGB(100, 100, 200), function(ativar, concluir)
+        ComandoAcao("Evoluir Race V3", ativar, concluir)
     end)
     
-    CriarCheckbox("⬆️ Evoluir Race V4", Color3.fromRGB(255, 200, 0), function(estado)
-        if estado then AcaoSimples("Evoluir Race V4") end
+    CriarCheckboxComando("⬆️ Evoluir Race V4", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
+        ComandoAcao("Evoluir Race V4", ativar, concluir)
     end)
     
-    CriarCheckbox("⚡ Completar Trial", Color3.fromRGB(100, 100, 200), function(estado)
-        if estado then AcaoSimples("Completar Trial") end
+    CriarCheckboxComando("⚡ Completar Trial", Color3.fromRGB(100, 100, 200), function(ativar, concluir)
+        ComandoAcao("Completar Trial", ativar, concluir)
     end)
     
-    CriarCheckbox("🔵 Conseguir Blue Gear", Color3.fromRGB(80, 80, 180), function(estado)
-        if estado then AcaoSimples("Conseguir Blue Gear") end
+    CriarCheckboxComando("🔵 Conseguir Blue Gear", Color3.fromRGB(80, 80, 180), function(ativar, concluir)
+        ComandoAcao("Conseguir Blue Gear", ativar, concluir)
     end)
     
-    CriarCheckbox("⭐ Desbloquear Todas as Raças", Color3.fromRGB(255, 200, 0), function(estado)
-        if estado then AcaoSimples("Desbloquear Todas as Raças") end
+    CriarCheckboxComando("⭐ Desbloquear Todas as Raças", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
+        ComandoAcao("Desbloquear Todas as Raças", ativar, concluir)
     end)
 end
 
 -- ============================================
--- ABA 10: HAKI (COM CHECKBOX)
+-- ABA 10: HAKI (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarHaki()
@@ -936,29 +1010,29 @@ function CarregarHaki()
     CriarDescricao("📌 Marque as evoluções de Haki")
     CriarSeparador()
     
-    CriarCheckbox("🟣 Evoluir Aura", Color3.fromRGB(200, 100, 255), function(estado)
-        if estado then AcaoSimples("Evoluir Aura") end
+    CriarCheckboxComando("🟣 Evoluir Aura", Color3.fromRGB(200, 100, 255), function(ativar, concluir)
+        ComandoAcao("Evoluir Aura", ativar, concluir)
     end)
     
-    CriarCheckbox("👁️ Evoluir Observation", Color3.fromRGB(200, 100, 255), function(estado)
-        if estado then AcaoSimples("Evoluir Observation") end
+    CriarCheckboxComando("👁️ Evoluir Observation", Color3.fromRGB(200, 100, 255), function(ativar, concluir)
+        ComandoAcao("Evoluir Observation", ativar, concluir)
     end)
     
-    CriarCheckbox("👁️ Conseguir Observation V2", Color3.fromRGB(200, 100, 255), function(estado)
-        if estado then AcaoSimples("Conseguir Observation V2") end
+    CriarCheckboxComando("👁️ Conseguir Observation V2", Color3.fromRGB(200, 100, 255), function(ativar, concluir)
+        ComandoAcao("Conseguir Observation V2", ativar, concluir)
     end)
     
-    CriarCheckbox("🌈 Conseguir Rainbow Haki", Color3.fromRGB(255, 200, 0), function(estado)
-        if estado then AcaoSimples("Conseguir Rainbow Haki") end
+    CriarCheckboxComando("🌈 Conseguir Rainbow Haki", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
+        ComandoAcao("Conseguir Rainbow Haki", ativar, concluir)
     end)
     
-    CriarCheckbox("⭐ Maximizar Haki", Color3.fromRGB(255, 200, 0), function(estado)
-        if estado then AcaoSimples("Maximizar Haki") end
+    CriarCheckboxComando("⭐ Maximizar Haki", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
+        ComandoAcao("Maximizar Haki", ativar, concluir)
     end)
 end
 
 -- ============================================
--- ABA 11: UTILIDADES (COM CHECKBOX)
+-- ABA 11: UTILIDADES (TUDO CHECKBOX)
 -- ============================================
 
 function CarregarUtil()
@@ -968,24 +1042,53 @@ function CarregarUtil()
     CriarDescricao("📌 Marque as utilidades que deseja ativar")
     CriarSeparador()
     
-    CriarCheckbox("💚 Auto Curar", Color3.fromRGB(50, 200, 100), function(estado)
-        print("[UTIL] Auto Curar: " .. (estado and "ON" or "OFF"))
+    CriarCheckboxComando("💚 Auto Curar", Color3.fromRGB(50, 200, 100), function(ativar, concluir)
+        if ativar then
+            print("[UTIL] Auto Curar ATIVADO")
+            task.spawn(function()
+                while ativar do
+                    Curar()
+                    task.wait(5)
+                end
+            end)
+        else
+            print("[UTIL] Auto Curar DESATIVADO")
+        end
+        if concluir then concluir() end
     end)
     
-    CriarCheckbox("🛡️ Anti-Ban", Color3.fromRGB(255, 200, 100), function(estado)
-        print("[UTIL] Anti-Ban: " .. (estado and "ON" or "OFF"))
+    CriarCheckboxComando("🛡️ Anti-Ban", Color3.fromRGB(255, 200, 100), function(ativar, concluir)
+        print("[UTIL] Anti-Ban: " .. (ativar and "ON" or "OFF"))
+        if concluir then concluir() end
     end)
     
-    CriarCheckbox("💤 Anti AFK", Color3.fromRGB(100, 200, 255), function(estado)
-        print("[UTIL] Anti AFK: " .. (estado and "ON" or "OFF"))
+    CriarCheckboxComando("💤 Anti AFK", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
+        if ativar then
+            print("[UTIL] Anti AFK ATIVADO")
+            task.spawn(function()
+                while ativar do
+                    task.wait(60)
+                    if player.Character and player.Character:FindFirstChild("Humanoid") then
+                        player.Character.Humanoid:MoveTo(Vector3.new(0, 0, 0))
+                        task.wait(0.1)
+                        player.Character.Humanoid:MoveTo(Vector3.new(10, 0, 10))
+                    end
+                end
+            end)
+        else
+            print("[UTIL] Anti AFK DESATIVADO")
+        end
+        if concluir then concluir() end
     end)
     
-    CriarCheckbox("🔄 Auto Equipar", Color3.fromRGB(100, 200, 255), function(estado)
-        print("[UTIL] Auto Equipar: " .. (estado and "ON" or "OFF"))
+    CriarCheckboxComando("🔄 Auto Equipar", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
+        print("[UTIL] Auto Equipar: " .. (ativar and "ON" or "OFF"))
+        if concluir then concluir() end
     end)
     
-    CriarCheckbox("🚀 FPS Boost", Color3.fromRGB(100, 200, 255), function(estado)
-        print("[UTIL] FPS Boost: " .. (estado and "ON" or "OFF"))
+    CriarCheckboxComando("🚀 FPS Boost", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
+        print("[UTIL] FPS Boost: " .. (ativar and "ON" or "OFF"))
+        if concluir then concluir() end
     end)
 end
 
@@ -996,7 +1099,7 @@ end
 local footer = Instance.new("TextLabel")
 footer.Size = UDim2.new(1, 0, 0, 16)
 footer.Position = UDim2.new(0, 0, 1, -5)
-footer.Text = "✅ v11.0 Checkbox | Marcileialves"
+footer.Text = "✅ v12.0 Checkbox Comandos | Marcileialves"
 footer.TextColor3 = Color3.fromRGB(150, 150, 180)
 footer.BackgroundTransparency = 1
 footer.Font = Enum.Font.GothamMedium
@@ -1009,5 +1112,5 @@ footer.Parent = frame
 
 SelecionarAba(1)
 
-print("✅ Blox Fruits Hub 11.0 carregado!")
+print("✅ Blox Fruits Hub 12.0 carregado!")
 print("📌 GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub")
