@@ -1,10 +1,9 @@
 --[[
-    BLOX FRUITS SCRIPT HUB - VERSÃO 10.0 (MENU COMPLETO)
+    BLOX FRUITS SCRIPT HUB - VERSÃO 11.0 (CHECKBOX)
     GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub
-    Abas | Seleção | Descrição | Menus Suspensos
 ]]
 
-print("🔥 Carregando Blox Fruits Hub 10.0...")
+print("✅ Carregando Blox Fruits Hub 11.0...")
 
 local player = game.Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
@@ -103,7 +102,127 @@ function Curar()
 end
 
 -- ============================================
--- SISTEMA DE FARM
+-- SISTEMA DE CHECKBOX
+-- ============================================
+
+local checkboxes = {}
+local checkboxAtivo = {}
+
+function CriarCheckbox(texto, cor, callback)
+    local frame2 = Instance.new("Frame")
+    frame2.Size = UDim2.new(1, 0, 0, 30)
+    frame2.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
+    frame2.BackgroundTransparency = 0.15
+    frame2.BorderSizePixel = 0
+    frame2.Parent = content
+    
+    local frameCorner = Instance.new("UICorner")
+    frameCorner.CornerRadius = UDim.new(0, 6)
+    frameCorner.Parent = frame2
+    
+    -- Checkbox (quadrado)
+    local checkbox = Instance.new("TextButton")
+    checkbox.Size = UDim2.new(0, 22, 0, 22)
+    checkbox.Position = UDim2.new(0, 8, 0.5, -11)
+    checkbox.Text = ""
+    checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
+    checkbox.BackgroundTransparency = 0.2
+    checkbox.Font = Enum.Font.GothamBold
+    checkbox.TextSize = 14
+    checkbox.BorderSizePixel = 2
+    checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
+    checkbox.Parent = frame2
+    
+    local checkboxCorner = Instance.new("UICorner")
+    checkboxCorner.CornerRadius = UDim.new(0, 4)
+    checkboxCorner.Parent = checkbox
+    
+    -- Label
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0, 200, 1, 0)
+    label.Position = UDim2.new(0, 36, 0, 0)
+    label.Text = texto
+    label.TextColor3 = Color3.fromRGB(220, 220, 220)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 11
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame2
+    
+    -- Descrição (ícone ao lado)
+    local infoIcon = Instance.new("TextLabel")
+    infoIcon.Size = UDim2.new(0, 20, 1, 0)
+    infoIcon.Position = UDim2.new(1, -24, 0, 0)
+    infoIcon.Text = "◻"
+    infoIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
+    infoIcon.BackgroundTransparency = 1
+    infoIcon.Font = Enum.Font.GothamBold
+    infoIcon.TextSize = 12
+    infoIcon.Parent = frame2
+    
+    local estado = false
+    
+    checkbox.TouchTap:Connect(function()
+        estado = not estado
+        if estado then
+            checkbox.Text = "✅"
+            checkbox.TextColor3 = Color3.fromRGB(100, 255, 100)
+            checkbox.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+            checkbox.BorderColor3 = Color3.fromRGB(0, 200, 0)
+            infoIcon.Text = "☑"
+            infoIcon.TextColor3 = Color3.fromRGB(100, 255, 100)
+            if callback then callback(true) end
+            print("[CHECKBOX] ✅ " .. texto .. " ATIVADO")
+        else
+            checkbox.Text = ""
+            checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+            checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
+            checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
+            infoIcon.Text = "◻"
+            infoIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
+            if callback then callback(false) end
+            print("[CHECKBOX] ❌ " .. texto .. " DESATIVADO")
+        end
+    end)
+    
+    checkbox.MouseButton1Click:Connect(function()
+        estado = not estado
+        if estado then
+            checkbox.Text = "✅"
+            checkbox.TextColor3 = Color3.fromRGB(100, 255, 100)
+            checkbox.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+            checkbox.BorderColor3 = Color3.fromRGB(0, 200, 0)
+            infoIcon.Text = "☑"
+            infoIcon.TextColor3 = Color3.fromRGB(100, 255, 100)
+            if callback then callback(true) end
+            print("[CHECKBOX] ✅ " .. texto .. " ATIVADO")
+        else
+            checkbox.Text = ""
+            checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
+            checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
+            checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
+            infoIcon.Text = "◻"
+            infoIcon.TextColor3 = Color3.fromRGB(255, 215, 0)
+            if callback then callback(false) end
+            print("[CHECKBOX] ❌ " .. texto .. " DESATIVADO")
+        end
+    end)
+    
+    -- Salva referência
+    table.insert(checkboxes, {
+        frame = frame2,
+        checkbox = checkbox,
+        label = label,
+        infoIcon = infoIcon,
+        estado = estado
+    })
+    
+    return {frame = frame2, checkbox = checkbox, label = label, estado = estado}
+end
+
+-- ============================================
+-- FARM
 -- ============================================
 
 local farmAtivo = false
@@ -201,7 +320,7 @@ function MostrarInfo()
 end
 
 -- ============================================
--- CRIA INTERFACE (COM ABAS E COMPONENTES)
+-- CRIA INTERFACE (COM CHECKBOX)
 -- ============================================
 
 local gui = Instance.new("ScreenGui")
@@ -209,7 +328,6 @@ gui.Name = "BloxFruitsHub"
 gui.Parent = player.PlayerGui
 gui.ResetOnSpawn = false
 
--- Frame Principal
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 420, 0, 480)
 frame.Position = UDim2.new(0.5, -210, 0.5, -240)
@@ -222,21 +340,18 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 14)
 corner.Parent = frame
 
--- ============================================
--- CABEÇALHO COM INFO DO JOGADOR
--- ============================================
-
+-- Cabeçalho
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 55)
+header.Size = UDim2.new(1, 0, 0, 50)
 header.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
 header.BackgroundTransparency = 0.08
 header.BorderSizePixel = 0
 header.Parent = frame
 
 local logo = Instance.new("TextLabel")
-logo.Size = UDim2.new(0, 180, 0, 25)
+logo.Size = UDim2.new(0, 180, 0, 22)
 logo.Position = UDim2.new(0, 10, 0, 4)
-logo.Text = "🔥 BLOX FRUITS 10.0"
+logo.Text = "✅ BLOX FRUITS 11.0"
 logo.TextColor3 = Color3.fromRGB(255, 215, 0)
 logo.BackgroundTransparency = 1
 logo.Font = Enum.Font.GothamBold
@@ -244,42 +359,39 @@ logo.TextSize = 16
 logo.TextXAlignment = Enum.TextXAlignment.Left
 logo.Parent = header
 
--- Info do jogador
 local infoPlayer = Instance.new("TextLabel")
-infoPlayer.Size = UDim2.new(0, 200, 0, 18)
-infoPlayer.Position = UDim2.new(0, 10, 0, 32)
+infoPlayer.Size = UDim2.new(0, 200, 0, 16)
+infoPlayer.Position = UDim2.new(0, 10, 0, 30)
 infoPlayer.Text = "👤 " .. player.Name .. "  🎯 Nv " .. (player.Level or 0)
 infoPlayer.TextColor3 = Color3.fromRGB(200, 200, 220)
 infoPlayer.BackgroundTransparency = 1
 infoPlayer.Font = Enum.Font.GothamMedium
-infoPlayer.TextSize = 11
+infoPlayer.TextSize = 10
 infoPlayer.TextXAlignment = Enum.TextXAlignment.Left
 infoPlayer.Parent = header
 
--- Status do Server
 local serverStatus = Instance.new("TextLabel")
-serverStatus.Size = UDim2.new(0, 120, 0, 18)
+serverStatus.Size = UDim2.new(0, 120, 0, 16)
 serverStatus.Position = UDim2.new(1, -130, 0, 4)
 serverStatus.Text = "🟢 Online"
 serverStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
 serverStatus.BackgroundTransparency = 1
 serverStatus.Font = Enum.Font.GothamBold
-serverStatus.TextSize = 11
+serverStatus.TextSize = 10
 serverStatus.TextXAlignment = Enum.TextXAlignment.Right
 serverStatus.Parent = header
 
 local serverId = Instance.new("TextLabel")
-serverId.Size = UDim2.new(0, 120, 0, 16)
-serverId.Position = UDim2.new(1, -130, 0, 24)
+serverId.Size = UDim2.new(0, 120, 0, 14)
+serverId.Position = UDim2.new(1, -130, 0, 22)
 serverId.Text = "🌐 #" .. game.JobId:sub(1, 8)
 serverId.TextColor3 = Color3.fromRGB(150, 150, 200)
 serverId.BackgroundTransparency = 1
 serverId.Font = Enum.Font.GothamMedium
-serverId.TextSize = 9
+serverId.TextSize = 8
 serverId.TextXAlignment = Enum.TextXAlignment.Right
 serverId.Parent = header
 
--- Botão Sair
 local exitBtn = Instance.new("TextButton")
 exitBtn.Size = UDim2.new(0, 24, 0, 24)
 exitBtn.Position = UDim2.new(1, -30, 0, 4)
@@ -307,13 +419,10 @@ exitBtn.MouseButton1Click:Connect(function()
     print("👋 Hub fechado!")
 end)
 
--- ============================================
--- SISTEMA DE ABAS (NAVEGAÇÃO)
--- ============================================
-
+-- Abas
 local abaContainer = Instance.new("Frame")
-abaContainer.Size = UDim2.new(1, 0, 0, 36)
-abaContainer.Position = UDim2.new(0, 0, 0, 55)
+abaContainer.Size = UDim2.new(1, 0, 0, 32)
+abaContainer.Position = UDim2.new(0, 0, 0, 50)
 abaContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 45)
 abaContainer.BackgroundTransparency = 0.2
 abaContainer.BorderSizePixel = 0
@@ -338,25 +447,24 @@ local abaAtual = 1
 
 function CriarBotaoAba(aba)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 80, 1, -4)
-    btn.Position = UDim2.new(0, 4 + ((#botoesAba) * 84), 0, 2)
+    btn.Size = UDim2.new(0, 75, 1, -4)
+    btn.Position = UDim2.new(0, 4 + ((#botoesAba) * 79), 0, 2)
     btn.Text = aba.nome
     btn.TextColor3 = Color3.fromRGB(200, 200, 220)
     btn.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
     btn.BackgroundTransparency = 0.3
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 10
+    btn.TextSize = 9
     btn.BorderSizePixel = 0
     btn.Parent = abaContainer
     
     local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.CornerRadius = UDim.new(0, 5)
     btnCorner.Parent = btn
     
-    -- Indicador de aba ativa
     local indicator = Instance.new("Frame")
-    indicator.Size = UDim2.new(0, 40, 0, 2)
-    indicator.Position = UDim2.new(0.5, -20, 1, -2)
+    indicator.Size = UDim2.new(0, 30, 0, 2)
+    indicator.Position = UDim2.new(0.5, -15, 1, -2)
     indicator.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
     indicator.BackgroundTransparency = 1
     indicator.BorderSizePixel = 0
@@ -390,13 +498,10 @@ function SelecionarAba(id)
     CarregarConteudo(id)
 end
 
--- ============================================
--- ÁREA DE CONTEÚDO (COM SCROLL)
--- ============================================
-
+-- Conteúdo
 local content = Instance.new("ScrollingFrame")
-content.Size = UDim2.new(1, -10, 1, -100)
-content.Position = UDim2.new(0, 5, 0, 95)
+content.Size = UDim2.new(1, -10, 1, -95)
+content.Position = UDim2.new(0, 5, 0, 85)
 content.BackgroundTransparency = 1
 content.BorderSizePixel = 0
 content.ScrollBarThickness = 2
@@ -404,39 +509,37 @@ content.ScrollBarImageColor3 = Color3.fromRGB(255, 215, 0)
 content.Parent = frame
 
 local contentLayout = Instance.new("UIListLayout")
-contentLayout.Padding = UDim.new(0, 4)
+contentLayout.Padding = UDim.new(0, 3)
 contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = content
 
 -- ============================================
--- FUNÇÕES DE CRIAÇÃO DOS COMPONENTES
+-- FUNÇÕES DE CRIAÇÃO (COM CHECKBOX)
 -- ============================================
 
--- 1. TÍTULO DA SEÇÃO
 function CriarTitulo(texto)
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, 0, 0, 22)
+    lbl.Size = UDim2.new(1, 0, 0, 20)
     lbl.Text = "▸ " .. texto
     lbl.TextColor3 = Color3.fromRGB(255, 215, 0)
     lbl.BackgroundTransparency = 1
     lbl.Font = Enum.Font.GothamBold
-    lbl.TextSize = 13
+    lbl.TextSize = 12
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = content
     return lbl
 end
 
--- 2. DESCRIÇÃO/TEXTO INFORMATIVO
 function CriarDescricao(texto)
     local frame2 = Instance.new("Frame")
-    frame2.Size = UDim2.new(1, 0, 0, 32)
+    frame2.Size = UDim2.new(1, 0, 0, 28)
     frame2.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
     frame2.BackgroundTransparency = 0.15
     frame2.BorderSizePixel = 0
     frame2.Parent = content
     
     local corner2 = Instance.new("UICorner")
-    corner2.CornerRadius = UDim.new(0, 6)
+    corner2.CornerRadius = UDim.new(0, 5)
     corner2.Parent = frame2
     
     local lbl = Instance.new("TextLabel")
@@ -446,186 +549,13 @@ function CriarDescricao(texto)
     lbl.TextColor3 = Color3.fromRGB(200, 200, 220)
     lbl.BackgroundTransparency = 1
     lbl.Font = Enum.Font.GothamMedium
-    lbl.TextSize = 10
+    lbl.TextSize = 9
     lbl.TextWrapped = true
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = frame2
     return frame2
 end
 
--- 3. BOTÃO SIMPLES
-function CriarBotao(texto, cor, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 32)
-    btn.Text = texto
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.BackgroundColor3 = cor or Color3.fromRGB(50, 50, 100)
-    btn.BackgroundTransparency = 0.15
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 12
-    btn.TextXAlignment = Enum.TextXAlignment.Left
-    btn.BorderSizePixel = 0
-    btn.Parent = content
-    
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
-    btnCorner.Parent = btn
-    
-    local arrow = Instance.new("TextLabel")
-    arrow.Size = UDim2.new(0, 20, 0, 20)
-    arrow.Position = UDim2.new(1, -24, 0.5, -10)
-    arrow.Text = "▶"
-    arrow.TextColor3 = Color3.fromRGB(255, 215, 0)
-    arrow.BackgroundTransparency = 1
-    arrow.Font = Enum.Font.GothamBold
-    arrow.TextSize = 10
-    arrow.Parent = btn
-    
-    btn.TouchTap:Connect(function()
-        if callback then pcall(callback) end
-        arrow.Text = "✅"
-        arrow.TextColor3 = Color3.fromRGB(100, 255, 100)
-    end)
-    btn.MouseButton1Click:Connect(function()
-        if callback then pcall(callback) end
-        arrow.Text = "✅"
-        arrow.TextColor3 = Color3.fromRGB(100, 255, 100)
-    end)
-    
-    return btn
-end
-
--- 4. MENU SUSPENSO (DROPDOWN)
-function CriarDropdown(opcoes, label, cor, callback)
-    local frame2 = Instance.new("Frame")
-    frame2.Size = UDim2.new(1, 0, 0, 32)
-    frame2.BackgroundColor3 = cor or Color3.fromRGB(50, 50, 100)
-    frame2.BackgroundTransparency = 0.15
-    frame2.BorderSizePixel = 0
-    frame2.Parent = content
-    
-    local frameCorner = Instance.new("UICorner")
-    frameCorner.CornerRadius = UDim.new(0, 6)
-    frameCorner.Parent = frame2
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0, 80, 1, 0)
-    label.Position = UDim2.new(0, 8, 0, 0)
-    label.Text = label or "Selecione:"
-    label.TextColor3 = Color3.fromRGB(180, 180, 200)
-    label.BackgroundTransparency = 1
-    label.Font = Enum.Font.GothamMedium
-    label.TextSize = 10
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = frame2
-    
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 120, 1, -4)
-    btn.Position = UDim2.new(1, -128, 0, 2)
-    btn.Text = opcoes[1] or "Selecionar"
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
-    btn.BackgroundTransparency = 0.2
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 10
-    btn.BorderSizePixel = 0
-    btn.Parent = frame2
-    
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 4)
-    btnCorner.Parent = btn
-    
-    local index = 1
-    
-    btn.TouchTap:Connect(function()
-        index = index + 1
-        if index > #opcoes then index = 1 end
-        btn.Text = opcoes[index]
-        if callback then callback(opcoes[index]) end
-        print("[DROPDOWN] Selecionado: " .. opcoes[index])
-    end)
-    btn.MouseButton1Click:Connect(function()
-        index = index + 1
-        if index > #opcoes then index = 1 end
-        btn.Text = opcoes[index]
-        if callback then callback(opcoes[index]) end
-        print("[DROPDOWN] Selecionado: " .. opcoes[index])
-    end)
-    
-    return {frame = frame2, btn = btn, label = label}
-end
-
--- 5. CAIXA DE SELEÇÃO (TOGGLE)
-function CriarToggle(texto, callback)
-    local frame2 = Instance.new("Frame")
-    frame2.Size = UDim2.new(1, 0, 0, 30)
-    frame2.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
-    frame2.BackgroundTransparency = 0.15
-    frame2.BorderSizePixel = 0
-    frame2.Parent = content
-    
-    local frameCorner = Instance.new("UICorner")
-    frameCorner.CornerRadius = UDim.new(0, 6)
-    frameCorner.Parent = frame2
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0, 150, 1, 0)
-    label.Position = UDim2.new(0, 8, 0, 0)
-    label.Text = texto
-    label.TextColor3 = Color3.fromRGB(220, 220, 220)
-    label.BackgroundTransparency = 1
-    label.Font = Enum.Font.GothamBold
-    label.TextSize = 11
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = frame2
-    
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 50, 0, 22)
-    btn.Position = UDim2.new(1, -56, 0.5, -11)
-    btn.Text = "OFF"
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    btn.BackgroundTransparency = 0.2
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 10
-    btn.BorderSizePixel = 0
-    btn.Parent = frame2
-    
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 4)
-    btnCorner.Parent = btn
-    
-    local estado = false
-    
-    btn.TouchTap:Connect(function()
-        estado = not estado
-        if estado then
-            btn.Text = "ON"
-            btn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-            if callback then callback(true) end
-        else
-            btn.Text = "OFF"
-            btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-            if callback then callback(false) end
-        end
-    end)
-    btn.MouseButton1Click:Connect(function()
-        estado = not estado
-        if estado then
-            btn.Text = "ON"
-            btn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-            if callback then callback(true) end
-        else
-            btn.Text = "OFF"
-            btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-            if callback then callback(false) end
-        end
-    end)
-    
-    return {frame = frame2, btn = btn, label = label, estado = estado}
-end
-
--- 6. LINHA SEPARADORA
 function CriarSeparador()
     local sep = Instance.new("Frame")
     sep.Size = UDim2.new(1, -10, 0, 1)
@@ -636,34 +566,33 @@ function CriarSeparador()
     sep.Parent = content
 end
 
--- 7. INFO EM CARDS
 function CriarInfo(texto, valor, cor)
     local frame2 = Instance.new("Frame")
-    frame2.Size = UDim2.new(1, 0, 0, 24)
+    frame2.Size = UDim2.new(1, 0, 0, 22)
     frame2.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
     frame2.BackgroundTransparency = 0.1
     frame2.BorderSizePixel = 0
     frame2.Parent = content
     
     local lbl1 = Instance.new("TextLabel")
-    lbl1.Size = UDim2.new(0, 100, 1, 0)
+    lbl1.Size = UDim2.new(0, 90, 1, 0)
     lbl1.Position = UDim2.new(0, 8, 0, 0)
     lbl1.Text = texto
     lbl1.TextColor3 = Color3.fromRGB(180, 180, 200)
     lbl1.BackgroundTransparency = 1
     lbl1.Font = Enum.Font.GothamMedium
-    lbl1.TextSize = 10
+    lbl1.TextSize = 9
     lbl1.TextXAlignment = Enum.TextXAlignment.Left
     lbl1.Parent = frame2
     
     local lbl2 = Instance.new("TextLabel")
-    lbl2.Size = UDim2.new(0, 120, 1, 0)
-    lbl2.Position = UDim2.new(1, -130, 0, 0)
+    lbl2.Size = UDim2.new(0, 110, 1, 0)
+    lbl2.Position = UDim2.new(1, -120, 0, 0)
     lbl2.Text = tostring(valor)
     lbl2.TextColor3 = cor or Color3.fromRGB(255, 215, 0)
     lbl2.BackgroundTransparency = 1
     lbl2.Font = Enum.Font.GothamBold
-    lbl2.TextSize = 10
+    lbl2.TextSize = 9
     lbl2.TextXAlignment = Enum.TextXAlignment.Right
     lbl2.Parent = frame2
 end
@@ -722,56 +651,51 @@ function CarregarInicio()
     CriarInfo("💚 Vida", health .. "/100", Color3.fromRGB(100, 255, 100))
     CriarInfo("📍 Ilha", ilha and ilha.nome or "Desconhecida", Color3.fromRGB(100, 200, 255))
     CriarInfo("🌐 Server", game.JobId:sub(1, 12), Color3.fromRGB(150, 150, 200))
-    
-    CriarSeparador()
-    CriarTitulo("⚡ AÇÕES RÁPIDAS")
-    CriarSeparador()
-    
-    CriarBotao("💚 Curar", Color3.fromRGB(50, 200, 100), Curar)
-    CriarBotao("📊 Mostrar Info", Color3.fromRGB(100, 150, 255), MostrarInfo)
-    CriarBotao("🏝️ Teleportar Jungle", Color3.fromRGB(50, 200, 100), function() TeleportarIlha("Jungle") end)
 end
 
 -- ============================================
--- ABA 2: FARM (COM DESCRIÇÃO E DROPDOWN)
+-- ABA 2: FARM (COM CHECKBOX)
 -- ============================================
 
 function CarregarFarm()
     CriarTitulo("⚔️ FARM AUTOMÁTICO")
     CriarSeparador()
     
-    -- Descrição
-    CriarDescricao("📌 Farm automático inteligente que analisa seu nível, encontra a melhor ilha e farma até o nível máximo!")
-    
-    CriarSeparador()
-    CriarTitulo("🎮 CONTROLES")
+    CriarDescricao("📌 Marque as opções abaixo para ativar o farm automático")
     CriarSeparador()
     
-    CriarBotao("🚀 Farmar Nível Máximo", Color3.fromRGB(0, 200, 100), FarmarAutomatico)
-    CriarBotao("⏹ Parar Farm", Color3.fromRGB(200, 50, 50), PararFarm)
-    CriarBotao("💚 Curar", Color3.fromRGB(50, 200, 100), Curar)
-    
-    CriarSeparador()
-    CriarTitulo("⚙️ CONFIGURAÇÕES")
-    CriarSeparador()
-    
-    -- Menu Suspenso: Modo de Farm
-    CriarDropdown({"Automático", "Agressivo", "Seguro"}, "Modo Farm:", Color3.fromRGB(50, 50, 100), function(valor)
-        print("[CONFIG] Modo Farm: " .. valor)
+    -- CHECKBOX: Farmar Níveis
+    CriarCheckbox("🚀 Farmar Níveis Automático", Color3.fromRGB(0, 200, 100), function(estado)
+        if estado then
+            FarmarAutomatico()
+        else
+            PararFarm()
+        end
     end)
     
-    -- Menu Suspenso: Arma
-    CriarDropdown({"Saber", "Rengoku", "Shisui", "Dark Blade"}, "Arma:", Color3.fromRGB(200, 150, 50), function(valor)
-        print("[CONFIG] Arma: " .. valor)
+    -- CHECKBOX: Auto Curar
+    CriarCheckbox("💚 Auto Curar", Color3.fromRGB(50, 200, 100), function(estado)
+        if estado then
+            print("[CONFIG] Auto Curar ATIVADO")
+            task.spawn(function()
+                while true do
+                    if not estado then break end
+                    Curar()
+                    task.wait(5)
+                end
+            end)
+        else
+            print("[CONFIG] Auto Curar DESATIVADO")
+        end
     end)
     
-    -- Caixa de Seleção: Auto Curar
-    CriarToggle("🔄 Auto Curar", function(estado)
-        print("[CONFIG] Auto Curar: " .. (estado and "ON" or "OFF"))
+    -- CHECKBOX: Auto Teleport
+    CriarCheckbox("🏝️ Auto Teleport para Melhor Ilha", Color3.fromRGB(50, 200, 255), function(estado)
+        print("[CONFIG] Auto Teleport: " .. (estado and "ON" or "OFF"))
     end)
     
-    -- Caixa de Seleção: Anti-Ban
-    CriarToggle("🛡️ Anti-Ban", function(estado)
+    -- CHECKBOX: Anti-Ban
+    CriarCheckbox("🛡️ Anti-Ban (Modo Seguro)", Color3.fromRGB(255, 200, 100), function(estado)
         print("[CONFIG] Anti-Ban: " .. (estado and "ON" or "OFF"))
     end)
     
@@ -782,124 +706,172 @@ function CarregarFarm()
     local nivel = player.Level or player:GetAttribute("Level") or 0
     CriarInfo("Nível", nivel .. "/3000", Color3.fromRGB(100, 255, 100))
     CriarInfo("Kills", kills, Color3.fromRGB(255, 200, 100))
+    CriarInfo("Status", farmAtivo and "🟢 Farmando" or "🔴 Parado", farmAtivo and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100))
 end
 
 -- ============================================
--- ABA 3: BOSS
+-- ABA 3: BOSS (COM CHECKBOX)
 -- ============================================
 
 function CarregarBoss()
     CriarTitulo("👹 BOSSES")
     CriarSeparador()
     
-    CriarDescricao("📌 Derrote todos os bosses do jogo automaticamente!")
+    CriarDescricao("📌 Marque os bosses que deseja derrotar automaticamente")
     CriarSeparador()
     
-    CriarBotao("Farmar Bosses", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Farmar Bosses") end)
-    CriarBotao("Derrotar Dough King", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Dough King") end)
-    CriarBotao("Derrotar Cake Prince", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Cake Prince") end)
-    CriarBotao("Derrotar Rip Indra", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Rip Indra") end)
-    CriarBotao("Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Leviathan") end)
-    CriarBotao("Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Sea Beast") end)
-    CriarBotao("Derrotar Greybeard", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Greybeard") end)
-    CriarBotao("⚡ Derrotar Todos os Bosses", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Derrotar Todos os Bosses") end)
+    CriarCheckbox("👹 Derrotar Dough King", Color3.fromRGB(200, 50, 50), function(estado)
+        if estado then AcaoSimples("Derrotar Dough King") end
+    end)
+    
+    CriarCheckbox("👹 Derrotar Cake Prince", Color3.fromRGB(200, 50, 50), function(estado)
+        if estado then AcaoSimples("Derrotar Cake Prince") end
+    end)
+    
+    CriarCheckbox("👹 Derrotar Rip Indra", Color3.fromRGB(200, 50, 50), function(estado)
+        if estado then AcaoSimples("Derrotar Rip Indra") end
+    end)
+    
+    CriarCheckbox("👹 Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function(estado)
+        if estado then AcaoSimples("Derrotar Leviathan") end
+    end)
+    
+    CriarCheckbox("👹 Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function(estado)
+        if estado then AcaoSimples("Derrotar Sea Beast") end
+    end)
+    
+    CriarCheckbox("⭐ Derrotar Todos os Bosses", Color3.fromRGB(255, 200, 0), function(estado)
+        if estado then AcaoSimples("Derrotar Todos os Bosses") end
+    end)
 end
 
 -- ============================================
--- ABA 4: SEA
+-- ABA 4: SEA (COM CHECKBOX)
 -- ============================================
 
 function CarregarSea()
     CriarTitulo("🌊 SEA EVENTS")
     CriarSeparador()
     
-    CriarDescricao("📌 Participe de eventos marítimos e derrote criaturas do mar!")
+    CriarDescricao("📌 Marque os eventos marítimos para participar")
     CriarSeparador()
     
-    CriarBotao("Derrotar Terror Shark", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Terror Shark") end)
-    CriarBotao("Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Sea Beast") end)
-    CriarBotao("Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Leviathan") end)
-    CriarBotao("Encontrar Mirage Island", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Mirage Island") end)
-    CriarBotao("Encontrar Kitsune Shrine", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Kitsune Shrine") end)
-    CriarBotao("Encontrar Prehistoric Island", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Prehistoric Island") end)
-    CriarBotao("Farmar Sea Events", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Farmar Sea Events") end)
+    CriarCheckbox("🦈 Derrotar Terror Shark", Color3.fromRGB(200, 50, 50), function(estado)
+        if estado then AcaoSimples("Derrotar Terror Shark") end
+    end)
+    
+    CriarCheckbox("🐋 Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function(estado)
+        if estado then AcaoSimples("Derrotar Sea Beast") end
+    end)
+    
+    CriarCheckbox("🐉 Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function(estado)
+        if estado then AcaoSimples("Derrotar Leviathan") end
+    end)
+    
+    CriarCheckbox("🏝️ Encontrar Mirage Island", Color3.fromRGB(100, 200, 255), function(estado)
+        if estado then AcaoSimples("Encontrar Mirage Island") end
+    end)
+    
+    CriarCheckbox("⛩️ Encontrar Kitsune Shrine", Color3.fromRGB(100, 200, 255), function(estado)
+        if estado then AcaoSimples("Encontrar Kitsune Shrine") end
+    end)
 end
 
 -- ============================================
--- ABA 5: RAID
+-- ABA 5: RAID (COM CHECKBOX)
 -- ============================================
 
 function CarregarRaid()
     CriarTitulo("⚔️ RAIDS")
     CriarSeparador()
     
-    CriarDescricao("📌 Participe de raids, desperte frutas e colete fragmentos!")
+    CriarDescricao("📌 Marque as opções de raid")
     CriarSeparador()
     
-    CriarBotao("Farmar Raid", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Farmar Raid") end)
-    CriarBotao("Despertar Fruta", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Despertar Fruta") end)
-    CriarBotao("Farmar Fragmentos", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Farmar Fragmentos") end)
-    CriarBotao("Completar Todas as Raids", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Completar Todas as Raids") end)
+    CriarCheckbox("⚔️ Farmar Raid", Color3.fromRGB(200, 50, 50), function(estado)
+        if estado then AcaoSimples("Farmar Raid") end
+    end)
+    
+    CriarCheckbox("🍎 Despertar Fruta", Color3.fromRGB(255, 200, 50), function(estado)
+        if estado then AcaoSimples("Despertar Fruta") end
+    end)
+    
+    CriarCheckbox("💎 Farmar Fragmentos", Color3.fromRGB(255, 200, 50), function(estado)
+        if estado then AcaoSimples("Farmar Fragmentos") end
+    end)
+    
+    CriarCheckbox("⭐ Completar Todas as Raids", Color3.fromRGB(255, 200, 0), function(estado)
+        if estado then AcaoSimples("Completar Todas as Raids") end
+    end)
 end
 
 -- ============================================
--- ABA 6: FRUTAS
+-- ABA 6: FRUTAS (COM CHECKBOX)
 -- ============================================
 
 function CarregarFrutas()
     CriarTitulo("🍎 FRUTAS")
     CriarSeparador()
     
-    CriarDescricao("📌 Encontre, colete e desperte frutas poderosas!")
+    CriarDescricao("📌 Marque as ações para frutas")
     CriarSeparador()
     
-    CriarBotao("Girar Frutas", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Girar Frutas") end)
-    CriarBotao("Comprar Frutas", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Comprar Frutas") end)
-    CriarBotao("Encontrar Frutas", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Frutas") end)
-    CriarBotao("Coletar Frutas", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Coletar Frutas") end)
-    CriarBotao("Despertar Todas as Frutas", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Despertar Todas as Frutas") end)
+    CriarCheckbox("🔭 Auto Sniper Frutas", Color3.fromRGB(100, 200, 255), function(estado)
+        print("[SNIPER] Sniper Frutas: " .. (estado and "ON" or "OFF"))
+    end)
     
-    CriarSeparador()
-    CriarTitulo("⚙️ CONFIGURAÇÕES")
-    CriarSeparador()
+    CriarCheckbox("🔄 Girar Frutas", Color3.fromRGB(255, 200, 50), function(estado)
+        if estado then AcaoSimples("Girar Frutas") end
+    end)
     
-    CriarToggle("🔭 Auto Sniper Frutas", function(estado)
-        print("[CONFIG] Sniper Frutas: " .. (estado and "ON" or "OFF"))
+    CriarCheckbox("🛒 Comprar Frutas", Color3.fromRGB(255, 200, 50), function(estado)
+        if estado then AcaoSimples("Comprar Frutas") end
+    end)
+    
+    CriarCheckbox("🔍 Encontrar Frutas", Color3.fromRGB(100, 200, 255), function(estado)
+        if estado then AcaoSimples("Encontrar Frutas") end
+    end)
+    
+    CriarCheckbox("⭐ Despertar Todas as Frutas", Color3.fromRGB(255, 200, 0), function(estado)
+        if estado then AcaoSimples("Despertar Todas as Frutas") end
     end)
 end
 
 -- ============================================
--- ABA 7: ESPADAS
+-- ABA 7: ESPADAS (COM CHECKBOX)
 -- ============================================
 
 function CarregarEspadas()
     CriarTitulo("🗡️ ESPADAS")
     CriarSeparador()
     
-    CriarDescricao("📌 Colete todas as espadas lendárias do jogo!")
+    CriarDescricao("📌 Marque as espadas que deseja conseguir")
     CriarSeparador()
     
     local espadas = {
         "True Triple Katana", "Cursed Dual Katana", "Shark Anchor",
         "Hallow Scythe", "Dark Blade V3", "Dragon Trident",
-        "Spikey Trident", "Buddy Sword", "Canvander",
         "Rengoku", "Midnight Blade", "Yama", "Tushita"
     }
     for _, espada in pairs(espadas) do
-        CriarBotao("Conseguir " .. espada, Color3.fromRGB(200, 150, 50), function() AcaoSimples("Conseguir " .. espada) end)
+        CriarCheckbox("🗡️ Conseguir " .. espada, Color3.fromRGB(200, 150, 50), function(estado)
+            if estado then AcaoSimples("Conseguir " .. espada) end
+        end)
     end
-    CriarBotao("⭐ Conseguir Todas as Espadas", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Conseguir Todas as Espadas") end)
+    CriarCheckbox("⭐ Conseguir Todas as Espadas", Color3.fromRGB(255, 200, 0), function(estado)
+        if estado then AcaoSimples("Conseguir Todas as Espadas") end
+    end)
 end
 
 -- ============================================
--- ABA 8: ESTILOS
+-- ABA 8: ESTILOS (COM CHECKBOX)
 -- ============================================
 
 function CarregarEstilos()
     CriarTitulo("🥊 ESTILOS")
     CriarSeparador()
     
-    CriarDescricao("📌 Aprenda todos os estilos de luta!")
+    CriarDescricao("📌 Marque os estilos que deseja aprender")
     CriarSeparador()
     
     local estilos = {
@@ -908,79 +880,112 @@ function CarregarEstilos()
         "Electric Claw", "Dragon Talon", "God Human", "Sanguine Art"
     }
     for _, estilo in pairs(estilos) do
-        CriarBotao("Conseguir " .. estilo, Color3.fromRGB(150, 100, 200), function() AcaoSimples("Conseguir " .. estilo) end)
+        CriarCheckbox("🥊 Aprender " .. estilo, Color3.fromRGB(150, 100, 200), function(estado)
+            if estado then AcaoSimples("Aprender " .. estilo) end
+        end)
     end
-    CriarBotao("⭐ Conseguir Todos os Estilos", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Conseguir Todos os Estilos") end)
+    CriarCheckbox("⭐ Aprender Todos os Estilos", Color3.fromRGB(255, 200, 0), function(estado)
+        if estado then AcaoSimples("Aprender Todos os Estilos") end
+    end)
 end
 
 -- ============================================
--- ABA 9: RAÇA
+-- ABA 9: RAÇA (COM CHECKBOX)
 -- ============================================
 
 function CarregarRaca()
     CriarTitulo("👤 RAÇA")
     CriarSeparador()
     
-    CriarDescricao("📌 Evolua sua raça até o nível máximo V4!")
+    CriarDescricao("📌 Marque as evoluções de raça")
     CriarSeparador()
     
-    CriarBotao("Evoluir Race V2", Color3.fromRGB(100, 100, 200), function() AcaoSimples("Evoluir Race V2") end)
-    CriarBotao("Evoluir Race V3", Color3.fromRGB(100, 100, 200), function() AcaoSimples("Evoluir Race V3") end)
-    CriarBotao("Evoluir Race V4", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Evoluir Race V4") end)
-    CriarBotao("Completar Trial", Color3.fromRGB(100, 100, 200), function() AcaoSimples("Completar Trial") end)
-    CriarBotao("Conseguir Blue Gear", Color3.fromRGB(80, 80, 180), function() AcaoSimples("Conseguir Blue Gear") end)
-    CriarBotao("⭐ Desbloquear Todas as Raças", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Desbloquear Todas as Raças") end)
+    CriarCheckbox("⬆️ Evoluir Race V2", Color3.fromRGB(100, 100, 200), function(estado)
+        if estado then AcaoSimples("Evoluir Race V2") end
+    end)
+    
+    CriarCheckbox("⬆️ Evoluir Race V3", Color3.fromRGB(100, 100, 200), function(estado)
+        if estado then AcaoSimples("Evoluir Race V3") end
+    end)
+    
+    CriarCheckbox("⬆️ Evoluir Race V4", Color3.fromRGB(255, 200, 0), function(estado)
+        if estado then AcaoSimples("Evoluir Race V4") end
+    end)
+    
+    CriarCheckbox("⚡ Completar Trial", Color3.fromRGB(100, 100, 200), function(estado)
+        if estado then AcaoSimples("Completar Trial") end
+    end)
+    
+    CriarCheckbox("🔵 Conseguir Blue Gear", Color3.fromRGB(80, 80, 180), function(estado)
+        if estado then AcaoSimples("Conseguir Blue Gear") end
+    end)
+    
+    CriarCheckbox("⭐ Desbloquear Todas as Raças", Color3.fromRGB(255, 200, 0), function(estado)
+        if estado then AcaoSimples("Desbloquear Todas as Raças") end
+    end)
 end
 
 -- ============================================
--- ABA 10: HAKI
+-- ABA 10: HAKI (COM CHECKBOX)
 -- ============================================
 
 function CarregarHaki()
     CriarTitulo("🟣 HAKI")
     CriarSeparador()
     
-    CriarDescricao("📌 Evolua seu Haki ao máximo!")
+    CriarDescricao("📌 Marque as evoluções de Haki")
     CriarSeparador()
     
-    CriarBotao("Evoluir Aura", Color3.fromRGB(200, 100, 255), function() AcaoSimples("Evoluir Aura") end)
-    CriarBotao("Evoluir Observation", Color3.fromRGB(200, 100, 255), function() AcaoSimples("Evoluir Observation") end)
-    CriarBotao("Conseguir Observation V2", Color3.fromRGB(200, 100, 255), function() AcaoSimples("Conseguir Observation V2") end)
-    CriarBotao("Conseguir Rainbow Haki", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Conseguir Rainbow Haki") end)
-    CriarBotao("⭐ Maximizar Haki", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Maximizar Haki") end)
+    CriarCheckbox("🟣 Evoluir Aura", Color3.fromRGB(200, 100, 255), function(estado)
+        if estado then AcaoSimples("Evoluir Aura") end
+    end)
+    
+    CriarCheckbox("👁️ Evoluir Observation", Color3.fromRGB(200, 100, 255), function(estado)
+        if estado then AcaoSimples("Evoluir Observation") end
+    end)
+    
+    CriarCheckbox("👁️ Conseguir Observation V2", Color3.fromRGB(200, 100, 255), function(estado)
+        if estado then AcaoSimples("Conseguir Observation V2") end
+    end)
+    
+    CriarCheckbox("🌈 Conseguir Rainbow Haki", Color3.fromRGB(255, 200, 0), function(estado)
+        if estado then AcaoSimples("Conseguir Rainbow Haki") end
+    end)
+    
+    CriarCheckbox("⭐ Maximizar Haki", Color3.fromRGB(255, 200, 0), function(estado)
+        if estado then AcaoSimples("Maximizar Haki") end
+    end)
 end
 
 -- ============================================
--- ABA 11: UTILIDADES
+-- ABA 11: UTILIDADES (COM CHECKBOX)
 -- ============================================
 
 function CarregarUtil()
     CriarTitulo("⚙️ UTILIDADES")
     CriarSeparador()
     
-    CriarDescricao("📌 Ferramentas úteis para sua jornada!")
+    CriarDescricao("📌 Marque as utilidades que deseja ativar")
     CriarSeparador()
     
-    CriarBotao("💚 Curar", Color3.fromRGB(50, 200, 100), Curar)
-    CriarBotao("📊 Mostrar Info", Color3.fromRGB(100, 150, 255), MostrarInfo)
-    CriarBotao("🏝️ Teleportar Jungle", Color3.fromRGB(50, 200, 100), function() TeleportarIlha("Jungle") end)
-    CriarBotao("🏝️ Teleportar Prison", Color3.fromRGB(50, 200, 100), function() TeleportarIlha("Prison") end)
-    CriarBotao("🏝️ Teleportar Skypiea", Color3.fromRGB(50, 200, 100), function() TeleportarIlha("Skypiea") end)
-    
-    CriarSeparador()
-    CriarTitulo("⚙️ CONFIGURAÇÕES")
-    CriarSeparador()
-    
-    CriarToggle("🔄 Auto Equipar", function(estado)
-        print("[CONFIG] Auto Equipar: " .. (estado and "ON" or "OFF"))
+    CriarCheckbox("💚 Auto Curar", Color3.fromRGB(50, 200, 100), function(estado)
+        print("[UTIL] Auto Curar: " .. (estado and "ON" or "OFF"))
     end)
     
-    CriarToggle("🛡️ Anti-Ban", function(estado)
-        print("[CONFIG] Anti-Ban: " .. (estado and "ON" or "OFF"))
+    CriarCheckbox("🛡️ Anti-Ban", Color3.fromRGB(255, 200, 100), function(estado)
+        print("[UTIL] Anti-Ban: " .. (estado and "ON" or "OFF"))
     end)
     
-    CriarToggle("💤 Anti AFK", function(estado)
-        print("[CONFIG] Anti AFK: " .. (estado and "ON" or "OFF"))
+    CriarCheckbox("💤 Anti AFK", Color3.fromRGB(100, 200, 255), function(estado)
+        print("[UTIL] Anti AFK: " .. (estado and "ON" or "OFF"))
+    end)
+    
+    CriarCheckbox("🔄 Auto Equipar", Color3.fromRGB(100, 200, 255), function(estado)
+        print("[UTIL] Auto Equipar: " .. (estado and "ON" or "OFF"))
+    end)
+    
+    CriarCheckbox("🚀 FPS Boost", Color3.fromRGB(100, 200, 255), function(estado)
+        print("[UTIL] FPS Boost: " .. (estado and "ON" or "OFF"))
     end)
 end
 
@@ -991,7 +996,7 @@ end
 local footer = Instance.new("TextLabel")
 footer.Size = UDim2.new(1, 0, 0, 16)
 footer.Position = UDim2.new(0, 0, 1, -5)
-footer.Text = "⭐ v10.0 Menu Completo | Marcileialves"
+footer.Text = "✅ v11.0 Checkbox | Marcileialves"
 footer.TextColor3 = Color3.fromRGB(150, 150, 180)
 footer.BackgroundTransparency = 1
 footer.Font = Enum.Font.GothamMedium
@@ -1004,5 +1009,5 @@ footer.Parent = frame
 
 SelecionarAba(1)
 
-print("✅ Blox Fruits Hub 10.0 carregado!")
+print("✅ Blox Fruits Hub 11.0 carregado!")
 print("📌 GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub")
