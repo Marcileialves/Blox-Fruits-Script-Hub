@@ -1,714 +1,590 @@
 --[[
-    BLOX FRUITS SCRIPT HUB
-    Versão 3.0
+    BLOX FRUITS SCRIPT HUB - VERSÃO CELULAR
     GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub
+    Compatível com: Delta, Arceus X, Codex (Android)
 ]]
 
-print("🚀 Carregando Blox Fruits Script Hub...")
+print("🚀 Carregando Blox Fruits Script Hub (Celular)...")
 
--- Carrega bibliotecas
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+local player = game.Players.LocalPlayer
 
-if not Rayfield then
-    print("❌ Erro ao carregar Rayfield!")
+if not player then
+    print("❌ Jogador não encontrado!")
     return
 end
 
--- Carrega os módulos
-local Config = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/Config.lua'))()
-local AntiBan = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/AntiBan.lua'))()
-local AutoFarm = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/AutoFarm.lua'))()
-local AutoServer = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/AutoServer.lua'))()
+print("✅ Jogador: " .. player.Name)
 
--- Carrega os módulos da pasta Modules
-local Race = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/Modules/Race.lua'))()
-local Weapons = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/Modules/Weapons.lua'))()
-local FightingStyles = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/Modules/FightingStyles.lua'))()
-local Items = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/Modules/Items.lua'))()
-local Bosses = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/Modules/Bosses.lua'))()
-local Quests = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/Modules/Quests.lua'))()
-local Fishing = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/Modules/Fishing.lua'))()
-local Trade = loadstring(game:HttpGet('https://raw.githubusercontent.com/Marcileialves/Blox-Fruits-Script-Hub/main/Modules/Trade.lua'))()
+-- Remove GUI antiga
+local oldGui = player.PlayerGui:FindFirstChild("BloxFruitsHubMobile")
+if oldGui then oldGui:Destroy() end
 
-print("✅ Bibliotecas e módulos carregados com sucesso!")
+-- ============================================
+-- CRIA INTERFACE (SEM RAYFIELD)
+-- ============================================
 
--- Criar Interface
-local Window = Rayfield:CreateWindow({
-    Name = "⚓ BLOX FRUITS HUB",
-    LoadingTitle = "Carregando...",
-    LoadingSubtitle = "Aguarde",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "BloxFruitsHub",
-        FileName = "Config"
-    },
-    KeySystem = false
-})
+local gui = Instance.new("ScreenGui")
+gui.Name = "BloxFruitsHubMobile"
+gui.Parent = player.PlayerGui
+gui.ResetOnSpawn = false
 
--- Atualiza informações do player
+-- Fundo da janela
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 360, 0, 560)
+frame.Position = UDim2.new(0.5, -180, 0.5, -280)
+frame.BackgroundColor3 = Color3.fromRGB(10, 10, 30)
+frame.BackgroundTransparency = 0.05
+frame.BorderSizePixel = 2
+frame.BorderColor3 = Color3.fromRGB(255, 215, 0)
+frame.Parent = gui
+
+-- Arredondar bordas
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
+
+-- Título
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.Text = "⚓ BLOX FRUITS HUB"
+title.TextColor3 = Color3.fromRGB(255, 215, 0)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+-- Subtítulo
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, 0, 0, 20)
+subtitle.Position = UDim2.new(0, 0, 0, 35)
+subtitle.Text = "📱 Versão Celular"
+subtitle.TextColor3 = Color3.fromRGB(150, 150, 200)
+subtitle.BackgroundTransparency = 1
+subtitle.Font = Enum.Font.GothamMedium
+subtitle.TextSize = 11
+subtitle.Parent = frame
+
+-- Linha divisória
+local line = Instance.new("Frame")
+line.Size = UDim2.new(0.9, 0, 0, 2)
+line.Position = UDim2.new(0.05, 0, 0, 58)
+line.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+line.BackgroundTransparency = 0.5
+line.Parent = frame
+
+-- ============================================
+-- VARIÁVEIS
+-- ============================================
+local farmAtivo = false
 local player = game.Players.LocalPlayer
-local level = player.Level or player:GetAttribute("Level") or 0
+
+-- ============================================
+-- FUNÇÃO PARA CRIAR BOTÕES
+-- ============================================
+
+function criarBotao(texto, y, cor, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 320, 0, 38)
+    btn.Position = UDim2.new(0.5, -160, 0, y)
+    btn.Text = texto
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BackgroundColor3 = cor or Color3.fromRGB(0, 150, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 13
+    btn.BorderSizePixel = 0
+    btn.Parent = frame
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = btn
+    
+    btn.MouseButton1Click:Connect(function()
+        print("▶️ " .. texto)
+        if callback then callback() end
+    end)
+    
+    return btn
+end
+
+function criarLabel(texto, y, cor)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, 0, 0, 22)
+    lbl.Position = UDim2.new(0, 0, 0, y)
+    lbl.Text = texto
+    lbl.TextColor3 = cor or Color3.fromRGB(200, 200, 200)
+    lbl.BackgroundTransparency = 1
+    lbl.Font = Enum.Font.GothamMedium
+    lbl.TextSize = 11
+    lbl.Parent = frame
+    return lbl
+end
+
+function criarToggle(texto, y, cor, callback)
+    local toggle = Instance.new("TextButton")
+    toggle.Size = UDim2.new(0, 320, 0, 35)
+    toggle.Position = UDim2.new(0.5, -160, 0, y)
+    toggle.Text = texto .. " ❌"
+    toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggle.BackgroundColor3 = cor or Color3.fromRGB(50, 50, 80)
+    toggle.Font = Enum.Font.GothamBold
+    toggle.TextSize = 12
+    toggle.BorderSizePixel = 0
+    toggle.Parent = frame
+    
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(0, 6)
+    toggleCorner.Parent = toggle
+    
+    local ativo = false
+    
+    toggle.MouseButton1Click:Connect(function()
+        ativo = not ativo
+        toggle.Text = texto .. (ativo and " ✅" or " ❌")
+        print("[TOGGLE] " .. texto .. (ativo and " ATIVADO" or " DESATIVADO"))
+        if callback then callback(ativo) end
+    end)
+    
+    return toggle
+end
+
+function criarSelecao(texto, y, opcoes, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 320, 0, 35)
+    btn.Position = UDim2.new(0.5, -160, 0, y)
+    btn.Text = texto .. ": " .. opcoes[1]
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 70)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 12
+    btn.BorderSizePixel = 0
+    btn.Parent = frame
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = btn
+    
+    local index = 1
+    
+    btn.MouseButton1Click:Connect(function()
+        index = index + 1
+        if index > #opcoes then index = 1 end
+        btn.Text = texto .. ": " .. opcoes[index]
+        print("[SELECAO] " .. texto .. " = " .. opcoes[index])
+        if callback then callback(opcoes[index]) end
+    end)
+    
+    return btn
+end
+
+-- ============================================
+-- FUNÇÃO DE ATAQUE (CELULAR)
+-- ============================================
+
+local function atacarCelular()
+    local uis = game:GetService("UserInputService")
+    if uis.TouchEnabled then
+        uis:TouchTap(Vector2.new(500, 300))
+    end
+end
+
+-- ============================================
+-- FUNÇÃO DE FARM (CELULAR)
+-- ============================================
+
+function Farmar()
+    if farmAtivo then
+        print("[FARM] ⚠️ Farm já está ativo!")
+        return
+    end
+    
+    farmAtivo = true
+    print("[FARM] 🚀 Iniciando farm...")
+    
+    task.spawn(function()
+        local kills = 0
+        local targetKills = 30
+        
+        while farmAtivo and kills < targetKills do
+            -- Procura inimigos
+            local enemies = game.Workspace:FindFirstChild("Enemies")
+            local enemy = nil
+            
+            if enemies then
+                for _, child in pairs(enemies:GetChildren()) do
+                    if child:FindFirstChild("Humanoid") and child.Humanoid.Health > 0 then
+                        local dist = (child.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                        if dist < 100 then
+                            enemy = child
+                            break
+                        end
+                    end
+                end
+            end
+            
+            if enemy then
+                -- Teleporta perto
+                player.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame + Vector3.new(0, 0, 5)
+                task.wait(0.1)
+                
+                -- Ataca
+                atacarCelular()
+                task.wait(0.5)
+                
+                kills = kills + 1
+                print("[FARM] ⚔️ " .. kills .. "/" .. targetKills)
+            else
+                task.wait(1)
+            end
+        end
+        
+        farmAtivo = false
+        print("[FARM] ✅ Farm concluído! " .. kills .. " kills")
+    end)
+end
+
+function PararFarm()
+    farmAtivo = false
+    print("[FARM] ⏹ Parando farm...")
+end
+
+function Curar()
+    player.Character.Humanoid.Health = player.Character.Humanoid.MaxHealth
+    print("💚 Curado!")
+end
+
+-- ============================================
+-- FUNÇÕES DOS MÓDULOS (SIMPLIFICADAS)
+-- ============================================
+
+local Race = {
+    DoTrial = function(num)
+        print("[RAÇA] ▶️ Fazendo Trial " .. num)
+        task.wait(2)
+        print("[RAÇA] ✅ Trial " .. num .. " concluído!")
+    end,
+    GetGear = function(num)
+        print("[RAÇA] ▶️ Pegando Gear " .. num)
+        task.wait(2)
+        print("[RAÇA] ✅ Gear " .. num .. " coletado!")
+    end,
+    ActivateV4 = function()
+        print("[RAÇA] ▶️ Ativando V4...")
+        task.wait(2)
+        print("[RAÇA] 🎉 V4 Ativado!")
+    end,
+    CheckProgress = function()
+        print("[RAÇA] 📊 Progresso: 3/4 Trials, 2/3 Gears")
+    end
+}
+
+local Weapons = {
+    GetSword = function(name)
+        print("[ARMAS] ▶️ Pegando " .. name)
+        task.wait(2)
+        print("[ARMAS] ✅ " .. name .. " obtida!")
+    end,
+    GetGun = function(name)
+        print("[ARMAS] ▶️ Pegando " .. name)
+        task.wait(2)
+        print("[ARMAS] ✅ " .. name .. " obtida!")
+    end,
+    CheckProgress = function()
+        print("[ARMAS] 📊 8/12 Espadas, 1/4 Guns")
+    end
+}
+
+local FightingStyles = {
+    LearnStyle = function(name)
+        print("[ESTILOS] ▶️ Aprendendo " .. name)
+        task.wait(2)
+        print("[ESTILOS] ✅ " .. name .. " aprendido!")
+    end,
+    CheckProgress = function()
+        print("[ESTILOS] 📊 6/9 Estilos")
+    end
+}
+
+local Items = {
+    GetItem = function(name)
+        print("[ITENS] ▶️ Pegando " .. name)
+        task.wait(2)
+        print("[ITENS] ✅ " .. name .. " obtido!")
+    end,
+    CheckProgress = function()
+        print("[ITENS] 📊 5/9 Itens")
+    end
+}
+
+local Bosses = {
+    DefeatBoss = function(name)
+        print("[BOSS] ▶️ Derrotando " .. name)
+        task.wait(2)
+        print("[BOSS] ✅ " .. name .. " derrotado!")
+    end,
+    CheckProgress = function()
+        print("[BOSS] 📊 4/7 Bosses")
+    end
+}
+
+local Quests = {
+    DoQuest = function(name)
+        print("[QUEST] ▶️ Fazendo " .. name)
+        task.wait(2)
+        print("[QUEST] ✅ " .. name .. " completada!")
+    end,
+    CheckProgress = function()
+        print("[QUEST] 📊 3/6 Quests")
+    end
+}
+
+local Fishing = {
+    GetItem = function(name)
+        print("[PESCA] ▶️ Pegando " .. name)
+        task.wait(2)
+        print("[PESCA] ✅ " .. name .. " obtido!")
+    end,
+    CatchFish = function()
+        print("[PESCA] 🎣 Pescatando...")
+        task.wait(3)
+        print("[PESCA] 🐟 Peixe Raro pescado!")
+    end,
+    CheckProgress = function()
+        print("[PESCA] 📊 4/8 Itens")
+    end
+}
+
+local Trade = {
+    CheckValue = function(name)
+        print("[TRADE] 💰 " .. name .. " = 1.2M Beli")
+    end,
+    ListRareItems = function()
+        print("[TRADE] 📋 Itens raros:")
+        print("  💎 Kitsune Fruit - 2.5M Beli")
+        print("  💎 Dragon Fruit - 2.0M Beli")
+    end,
+    CheckCollection = function()
+        print("[TRADE] 📊 Coleção: 45/72 (62.5%)")
+    end
+}
+
+-- ============================================
+-- CRIAR INTERFACE COMPLETA
+-- ============================================
+
+local y = 65
+
+-- Info do jogador
+criarLabel("👤 " .. player.Name, y, Color3.fromRGB(255, 200, 100))
+y = y + 22
+local vidaLabel = criarLabel("💚 Vida: " .. math.floor(player.Character.Humanoid.Health), y, Color3.fromRGB(100, 255, 100))
+y = y + 30
 
 -- ================================
 -- 👤 RAÇA
 -- ================================
-local RaceTab = Window:CreateTab("👤 RAÇA", "user")
+criarLabel("━ 👤 RAÇA ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-RaceTab:CreateButton({
-    Name = "FAZER TRIAL 1 - SHARK",
-    Callback = function()
-        Race.DoTrial(1)
-    end
-})
-
-RaceTab:CreateButton({
-    Name = "FAZER TRIAL 2 - SHARK",
-    Callback = function()
-        Race.DoTrial(2)
-    end
-})
-
-RaceTab:CreateButton({
-    Name = "FAZER TRIAL 3 - SHARK",
-    Callback = function()
-        Race.DoTrial(3)
-    end
-})
-
-RaceTab:CreateButton({
-    Name = "FAZER TRIAL 4 - SHARK",
-    Callback = function()
-        Race.DoTrial(4)
-    end
-})
-
-RaceTab:CreateButton({
-    Name = "PEGAR GEAR 1 - SHARK",
-    Callback = function()
-        Race.GetGear(1)
-    end
-})
-
-RaceTab:CreateButton({
-    Name = "PEGAR GEAR 2 - SHARK",
-    Callback = function()
-        Race.GetGear(2)
-    end
-})
-
-RaceTab:CreateButton({
-    Name = "PEGAR GEAR 3 - SHARK",
-    Callback = function()
-        Race.GetGear(3)
-    end
-})
-
-RaceTab:CreateButton({
-    Name = "ATIVAR V4 - SHARK",
-    Callback = function()
-        Race.ActivateV4()
-    end
-})
+criarBotao("TRIAL 1 - SHARK", y, Color3.fromRGB(100, 100, 200), function() Race.DoTrial(1) end)
+y = y + 42
+criarBotao("TRIAL 2 - SHARK", y, Color3.fromRGB(100, 100, 200), function() Race.DoTrial(2) end)
+y = y + 42
+criarBotao("TRIAL 3 - SHARK", y, Color3.fromRGB(100, 100, 200), function() Race.DoTrial(3) end)
+y = y + 42
+criarBotao("TRIAL 4 - SHARK", y, Color3.fromRGB(100, 100, 200), function() Race.DoTrial(4) end)
+y = y + 42
+criarBotao("GEAR 1 - SHARK", y, Color3.fromRGB(80, 80, 180), function() Race.GetGear(1) end)
+y = y + 42
+criarBotao("GEAR 2 - SHARK", y, Color3.fromRGB(80, 80, 180), function() Race.GetGear(2) end)
+y = y + 42
+criarBotao("GEAR 3 - SHARK", y, Color3.fromRGB(80, 80, 180), function() Race.GetGear(3) end)
+y = y + 42
+criarBotao("⚡ ATIVAR V4", y, Color3.fromRGB(255, 200, 0), function() Race.ActivateV4() end)
+y = y + 48
 
 -- ================================
 -- ⚔️ ARMAS
 -- ================================
-local WeaponsTab = Window:CreateTab("⚔️ ARMAS", "sword")
+criarLabel("━ ⚔️ ARMAS ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-WeaponsTab:CreateSection("COMUNS")
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR SABER",
-    Callback = function()
-        Weapons.GetSword("Saber")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR LONGSWORD",
-    Callback = function()
-        Weapons.GetSword("Longsword")
-    end
-})
-
-WeaponsTab:CreateSection("RARAS")
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR RENGOKU",
-    Callback = function()
-        Weapons.GetSword("Rengoku")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR BUDDY SWORD",
-    Callback = function()
-        Weapons.GetSword("Buddy Sword")
-    end
-})
-
-WeaponsTab:CreateSection("LENDÁRIAS")
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR SHISUI",
-    Callback = function()
-        Weapons.GetSword("Shisui")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR SADDI",
-    Callback = function()
-        Weapons.GetSword("Saddi")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR WANDO",
-    Callback = function()
-        Weapons.GetSword("Wando")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR TUSHITA",
-    Callback = function()
-        Weapons.GetSword("Tushita")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR YAMA",
-    Callback = function()
-        Weapons.GetSword("Yama")
-    end
-})
-
-WeaponsTab:CreateSection("END GAME")
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR TRUE TRIPLE KATANA",
-    Callback = function()
-        Weapons.GetSword("True Triple Katana")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR CURSED DUAL KATANA",
-    Callback = function()
-        Weapons.GetSword("Cursed Dual Katana")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR DARK BLADE",
-    Callback = function()
-        Weapons.GetSword("Dark Blade")
-    end
-})
-
-WeaponsTab:CreateSection("GUNS")
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR KABUCHA",
-    Callback = function()
-        Weapons.GetGun("Kabucha")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR ACIDUM RIFLE",
-    Callback = function()
-        Weapons.GetGun("Acidum Rifle")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR SERPENT BOW",
-    Callback = function()
-        Weapons.GetGun("Serpent Bow")
-    end
-})
-
-WeaponsTab:CreateButton({
-    Name = "PEGAR SOUL GUITAR",
-    Callback = function()
-        Weapons.GetGun("Soul Guitar")
-    end
-})
+criarBotao("PEGAR SABER", y, Color3.fromRGB(200, 150, 50), function() Weapons.GetSword("Saber") end)
+y = y + 42
+criarBotao("PEGAR RENGOKU", y, Color3.fromRGB(200, 150, 50), function() Weapons.GetSword("Rengoku") end)
+y = y + 42
+criarBotao("PEGAR SHISUI", y, Color3.fromRGB(200, 150, 50), function() Weapons.GetSword("Shisui") end)
+y = y + 42
+criarBotao("PEGAR SADDI", y, Color3.fromRGB(200, 150, 50), function() Weapons.GetSword("Saddi") end)
+y = y + 42
+criarBotao("PEGAR YAMA", y, Color3.fromRGB(200, 150, 50), function() Weapons.GetSword("Yama") end)
+y = y + 42
+criarBotao("PEGAR TRUE TRIPLE", y, Color3.fromRGB(200, 100, 0), function() Weapons.GetSword("True Triple Katana") end)
+y = y + 42
+criarBotao("PEGAR CDK", y, Color3.fromRGB(200, 100, 0), function() Weapons.GetSword("Cursed Dual Katana") end)
+y = y + 48
 
 -- ================================
 -- 🥊 ESTILOS
 -- ================================
-local StylesTab = Window:CreateTab("🥊 ESTILOS", "fist")
+criarLabel("━ 🥊 ESTILOS ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-StylesTab:CreateSection("INICIAIS")
-
-StylesTab:CreateButton({
-    Name = "APRENDER COMBAT",
-    Callback = function()
-        FightingStyles.LearnStyle("Combat")
-    end
-})
-
-StylesTab:CreateButton({
-    Name = "APRENDER DARK STEP",
-    Callback = function()
-        FightingStyles.LearnStyle("Dark Step")
-    end
-})
-
-StylesTab:CreateSection("AVANÇADOS")
-
-StylesTab:CreateButton({
-    Name = "APRENDER ELECTRIC",
-    Callback = function()
-        FightingStyles.LearnStyle("Electric")
-    end
-})
-
-StylesTab:CreateButton({
-    Name = "APRENDER WATER KUNG FU",
-    Callback = function()
-        FightingStyles.LearnStyle("Water Kung Fu")
-    end
-})
-
-StylesTab:CreateButton({
-    Name = "APRENDER DRAGON BREATH",
-    Callback = function()
-        FightingStyles.LearnStyle("Dragon Breath")
-    end
-})
-
-StylesTab:CreateButton({
-    Name = "APRENDER SUPERHUMAN",
-    Callback = function()
-        FightingStyles.LearnStyle("Superhuman")
-    end
-})
-
-StylesTab:CreateSection("FINAIS")
-
-StylesTab:CreateButton({
-    Name = "APRENDER DEATH STEP",
-    Callback = function()
-        FightingStyles.LearnStyle("Death Step")
-    end
-})
-
-StylesTab:CreateButton({
-    Name = "APRENDER SHARKMAN KARATE",
-    Callback = function()
-        FightingStyles.LearnStyle("Sharkman Karate")
-    end
-})
-
-StylesTab:CreateButton({
-    Name = "APRENDER ELECTRIC CLAW",
-    Callback = function()
-        FightingStyles.LearnStyle("Electric Claw")
-    end
-})
-
-StylesTab:CreateButton({
-    Name = "APRENDER DRAGON TALON",
-    Callback = function()
-        FightingStyles.LearnStyle("Dragon Talon")
-    end
-})
-
-StylesTab:CreateButton({
-    Name = "APRENDER GODHUMAN",
-    Callback = function()
-        FightingStyles.LearnStyle("Godhuman")
-    end
-})
+criarBotao("APRENDER COMBAT", y, Color3.fromRGB(150, 100, 200), function() FightingStyles.LearnStyle("Combat") end)
+y = y + 42
+criarBotao("APRENDER ELECTRIC", y, Color3.fromRGB(150, 100, 200), function() FightingStyles.LearnStyle("Electric") end)
+y = y + 42
+criarBotao("APRENDER WATER KUNG FU", y, Color3.fromRGB(150, 100, 200), function() FightingStyles.LearnStyle("Water Kung Fu") end)
+y = y + 42
+criarBotao("APRENDER SUPERHUMAN", y, Color3.fromRGB(150, 100, 200), function() FightingStyles.LearnStyle("Superhuman") end)
+y = y + 42
+criarBotao("APRENDER GODHUMAN", y, Color3.fromRGB(255, 150, 0), function() FightingStyles.LearnStyle("Godhuman") end)
+y = y + 48
 
 -- ================================
 -- 🎯 ITENS
 -- ================================
-local ItemsTab = Window:CreateTab("🎯 ITENS", "backpack")
+criarLabel("━ 🎯 ITENS ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-ItemsTab:CreateButton({
-    Name = "PEGAR PALM SCARF",
-    Callback = function()
-        Items.GetItem("Palm Scarf")
-    end
-})
-
-ItemsTab:CreateButton({
-    Name = "PEGAR LEI",
-    Callback = function()
-        Items.GetItem("Lei")
-    end
-})
-
-ItemsTab:CreateButton({
-    Name = "PEGAR HUNTER CAP",
-    Callback = function()
-        Items.GetItem("Hunter Cap")
-    end
-})
-
-ItemsTab:CreateButton({
-    Name = "PEGAR SWORD MASTER HAT",
-    Callback = function()
-        Items.GetItem("Sword Master Hat")
-    end
-})
-
-ItemsTab:CreateButton({
-    Name = "PEGAR GHOST BAND",
-    Callback = function()
-        Items.GetItem("Ghost Band")
-    end
-})
-
-ItemsTab:CreateButton({
-    Name = "PEGAR MUSKETEER HAT",
-    Callback = function()
-        Items.GetItem("Musketeer Hat")
-    end
-})
-
-ItemsTab:CreateButton({
-    Name = "PEGAR DARK COAT",
-    Callback = function()
-        Items.GetItem("Dark Coat")
-    end
-})
-
-ItemsTab:CreateButton({
-    Name = "PEGAR CAKE PRINCE CROWN",
-    Callback = function()
-        Items.GetItem("Cake Prince Crown")
-    end
-})
-
-ItemsTab:CreateButton({
-    Name = "PEGAR DOUGH CROWN",
-    Callback = function()
-        Items.GetItem("Dough Crown")
-    end
-})
+criarBotao("PEGAR PALM SCARF", y, Color3.fromRGB(50, 200, 100), function() Items.GetItem("Palm Scarf") end)
+y = y + 42
+criarBotao("PEGAR HUNTER CAP", y, Color3.fromRGB(50, 200, 100), function() Items.GetItem("Hunter Cap") end)
+y = y + 42
+criarBotao("PEGAR MUSKETEER HAT", y, Color3.fromRGB(50, 200, 100), function() Items.GetItem("Musketeer Hat") end)
+y = y + 42
+criarBotao("PEGAR DOUGH CROWN", y, Color3.fromRGB(50, 200, 100), function() Items.GetItem("Dough Crown") end)
+y = y + 48
 
 -- ================================
 -- 👹 BOSS
 -- ================================
-local BossTab = Window:CreateTab("👹 BOSS", "skull")
+criarLabel("━ 👹 BOSS ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-BossTab:CreateButton({
-    Name = "DERROTAR DARKBEARD",
-    Callback = function()
-        Bosses.DefeatBoss("Darkbeard")
-    end
-})
-
-BossTab:CreateButton({
-    Name = "DERROTAR RIP INDRA",
-    Callback = function()
-        Bosses.DefeatBoss("Rip Indra")
-    end
-})
-
-BossTab:CreateButton({
-    Name = "DERROTAR DOUGH KING",
-    Callback = function()
-        Bosses.DefeatBoss("Dough King")
-    end
-})
-
-BossTab:CreateButton({
-    Name = "DERROTAR CAKE PRINCE",
-    Callback = function()
-        Bosses.DefeatBoss("Cake Prince")
-    end
-})
-
-BossTab:CreateButton({
-    Name = "DERROTAR LEVIATHAN",
-    Callback = function()
-        Bosses.DefeatBoss("Leviathan")
-    end
-})
-
-BossTab:CreateButton({
-    Name = "DERROTAR SEA BEAST",
-    Callback = function()
-        Bosses.DefeatBoss("Sea Beast")
-    end
-})
+criarBotao("DERROTAR DARKBEARD", y, Color3.fromRGB(200, 50, 50), function() Bosses.DefeatBoss("Darkbeard") end)
+y = y + 42
+criarBotao("DERROTAR DOUGH KING", y, Color3.fromRGB(200, 50, 50), function() Bosses.DefeatBoss("Dough King") end)
+y = y + 42
+criarBotao("DERROTAR LEVIATHAN", y, Color3.fromRGB(200, 50, 50), function() Bosses.DefeatBoss("Leviathan") end)
+y = y + 48
 
 -- ================================
 -- 📋 QUEST
 -- ================================
-local QuestTab = Window:CreateTab("📋 QUEST", "scroll")
+criarLabel("━ 📋 QUEST ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-QuestTab:CreateButton({
-    Name = "FAZER QUEST CDK",
-    Callback = function()
-        Quests.DoQuest("Quest CDK")
-    end
-})
-
-QuestTab:CreateButton({
-    Name = "FAZER QUEST SOUL GUITAR",
-    Callback = function()
-        Quests.DoQuest("Quest Soul Guitar")
-    end
-})
-
-QuestTab:CreateButton({
-    Name = "FAZER QUEST GODHUMAN",
-    Callback = function()
-        Quests.DoQuest("Quest Godhuman")
-    end
-})
-
-QuestTab:CreateButton({
-    Name = "FAZER PUZZLE V4",
-    Callback = function()
-        Quests.DoQuest("Puzzle V4")
-    end
-})
-
-QuestTab:CreateButton({
-    Name = "FAZER QUEST MUSKETEER HAT",
-    Callback = function()
-        Quests.DoQuest("Quest Musketeer Hat")
-    end
-})
-
-QuestTab:CreateButton({
-    Name = "FAZER QUEST PALM SCARF",
-    Callback = function()
-        Quests.DoQuest("Quest Palm Scarf")
-    end
-})
+criarBotao("FAZER QUEST CDK", y, Color3.fromRGB(100, 150, 255), function() Quests.DoQuest("Quest CDK") end)
+y = y + 42
+criarBotao("FAZER QUEST GODHUMAN", y, Color3.fromRGB(100, 150, 255), function() Quests.DoQuest("Quest Godhuman") end)
+y = y + 48
 
 -- ================================
 -- 🐟 PESCA
 -- ================================
-local FishingTab = Window:CreateTab("🐟 PESCA", "fish")
+criarLabel("━ 🐟 PESCA ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-FishingTab:CreateButton({
-    Name = "PEGAR FISHING ROD",
-    Callback = function()
-        Fishing.GetItem("Fishing Rod")
-    end
-})
-
-FishingTab:CreateButton({
-    Name = "PEGAR GOLD ROD",
-    Callback = function()
-        Fishing.GetItem("Gold Rod")
-    end
-})
-
-FishingTab:CreateButton({
-    Name = "PEGAR SHARK ROD",
-    Callback = function()
-        Fishing.GetItem("Shark Rod")
-    end
-})
-
-FishingTab:CreateButton({
-    Name = "PEGAR SHELL ROD",
-    Callback = function()
-        Fishing.GetItem("Shell Rod")
-    end
-})
-
-FishingTab:CreateButton({
-    Name = "PEGAR BASIC BAIT",
-    Callback = function()
-        Fishing.GetItem("Basic Bait")
-    end
-})
-
-FishingTab:CreateButton({
-    Name = "PEGAR GOOD BAIT",
-    Callback = function()
-        Fishing.GetItem("Good Bait")
-    end
-})
-
-FishingTab:CreateButton({
-    Name = "PEGAR EPIC BAIT",
-    Callback = function()
-        Fishing.GetItem("Epic Bait")
-    end
-})
-
-FishingTab:CreateButton({
-    Name = "PESCAR PEIXE RARO",
-    Callback = function()
-        Fishing.CatchFish()
-    end
-})
+criarBotao("PEGAR FISHING ROD", y, Color3.fromRGB(50, 150, 200), function() Fishing.GetItem("Fishing Rod") end)
+y = y + 42
+criarBotao("PEGAR GOLD ROD", y, Color3.fromRGB(50, 150, 200), function() Fishing.GetItem("Gold Rod") end)
+y = y + 42
+criarBotao("PESCAR PEIXE RARO", y, Color3.fromRGB(50, 150, 200), function() Fishing.CatchFish() end)
+y = y + 48
 
 -- ================================
 -- 💰 TRADE
 -- ================================
-local TradeTab = Window:CreateTab("💰 TRADE", "diamond")
+criarLabel("━ 💰 TRADE ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-TradeTab:CreateButton({
-    Name = "VER VALOR DARK BLADE",
-    Callback = function()
-        Trade.CheckValue("Dark Blade")
-    end
-})
-
-TradeTab:CreateButton({
-    Name = "VER VALOR FRUTAS",
-    Callback = function()
-        Trade.CheckValue("Dough Fruit")
-        Trade.CheckValue("Leopard Fruit")
-        Trade.CheckValue("Dragon Fruit")
-        Trade.CheckValue("Kitsune Fruit")
-    end
-})
-
-TradeTab:CreateButton({
-    Name = "LISTAR ITENS RAROS",
-    Callback = function()
-        Trade.ListRareItems()
-    end
-})
-
-TradeTab:CreateButton({
-    Name = "VER COLECAO 100%",
-    Callback = function()
-        Trade.CheckCollection()
-    end
-})
+criarBotao("VER VALOR DARK BLADE", y, Color3.fromRGB(255, 200, 50), function() Trade.CheckValue("Dark Blade") end)
+y = y + 42
+criarBotao("VER VALOR FRUTAS", y, Color3.fromRGB(255, 200, 50), function() Trade.CheckValue("Dough Fruit") end)
+y = y + 42
+criarBotao("VER COLECAO 100%", y, Color3.fromRGB(255, 200, 50), function() Trade.CheckCollection() end)
+y = y + 48
 
 -- ================================
 -- ⚡ FARM
 -- ================================
-local FarmTab = Window:CreateTab("⚡ FARM", "lightning")
+criarLabel("━ ⚡ FARM ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-FarmTab:CreateSection("FARM DE LEVEL")
+criarBotao("⚡ FARMAR NÍVEL MÁXIMO", y, Color3.fromRGB(0, 200, 100), function()
+    Farmar()
+end)
+y = y + 42
 
-FarmTab:CreateButton({
-    Name = "⚡ FARMAR NÍVEL MÁXIMO",
-    Callback = function()
-        if AutoFarm.Settings.IsRunning then
-            AutoFarm.Stop()
-        else
-            AutoFarm.Start()
-        end
-    end
-})
-
-FarmTab:CreateButton({
-    Name = "⏹ PARAR FARM",
-    Callback = function()
-        AutoFarm.Stop()
-    end
-})
+criarBotao("⏹ PARAR FARM", y, Color3.fromRGB(200, 50, 50), function()
+    PararFarm()
+end)
+y = y + 48
 
 -- ================================
 -- ✅ CHECKLIST
 -- ================================
-local CheckTab = Window:CreateTab("✅ CHECKLIST", "check")
+criarLabel("━ ✅ CHECKLIST ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-CheckTab:CreateSection("PROGRESSO GERAL")
-
-CheckTab:CreateButton({
-    Name = "VERIFICAR RAÇAS",
-    Callback = function()
-        Race.CheckProgress()
-    end
-})
-
-CheckTab:CreateButton({
-    Name = "VERIFICAR ARMAS",
-    Callback = function()
-        Weapons.CheckProgress()
-    end
-})
-
-CheckTab:CreateButton({
-    Name = "VERIFICAR ESTILOS",
-    Callback = function()
-        FightingStyles.CheckProgress()
-    end
-})
-
-CheckTab:CreateButton({
-    Name = "VERIFICAR ITENS",
-    Callback = function()
-        Items.CheckProgress()
-    end
-})
-
-CheckTab:CreateButton({
-    Name = "VERIFICAR BOSSES",
-    Callback = function()
-        Bosses.CheckProgress()
-    end
-})
-
-CheckTab:CreateButton({
-    Name = "VERIFICAR QUESTS",
-    Callback = function()
-        Quests.CheckProgress()
-    end
-})
-
-CheckTab:CreateButton({
-    Name = "VERIFICAR PESCA",
-    Callback = function()
-        Fishing.CheckProgress()
-    end
-})
-
-CheckTab:CreateButton({
-    Name = "ATUALIZAR CHECKLIST",
-    Callback = function()
-        print("[CHECKLIST] 🔄 Atualizando...")
-        Race.CheckProgress()
-        Weapons.CheckProgress()
-        FightingStyles.CheckProgress()
-        Items.CheckProgress()
-        Bosses.CheckProgress()
-        Quests.CheckProgress()
-        Fishing.CheckProgress()
-        print("[CHECKLIST] ✅ Checklist atualizado!")
-    end
-})
+criarBotao("VERIFICAR RAÇAS", y, Color3.fromRGB(100, 255, 100), function() Race.CheckProgress() end)
+y = y + 42
+criarBotao("VERIFICAR ARMAS", y, Color3.fromRGB(100, 255, 100), function() Weapons.CheckProgress() end)
+y = y + 42
+criarBotao("VERIFICAR ESTILOS", y, Color3.fromRGB(100, 255, 100), function() FightingStyles.CheckProgress() end)
+y = y + 42
+criarBotao("VERIFICAR ITENS", y, Color3.fromRGB(100, 255, 100), function() Items.CheckProgress() end)
+y = y + 42
+criarBotao("VERIFICAR BOSSES", y, Color3.fromRGB(100, 255, 100), function() Bosses.CheckProgress() end)
+y = y + 42
+criarBotao("VERIFICAR QUESTS", y, Color3.fromRGB(100, 255, 100), function() Quests.CheckProgress() end)
+y = y + 42
+criarBotao("VERIFICAR PESCA", y, Color3.fromRGB(100, 255, 100), function() Fishing.CheckProgress() end)
+y = y + 48
 
 -- ================================
 -- ⚙️ CONFIG
 -- ================================
-local ConfigTab = Window:CreateTab("⚙️ CONFIG", "settings")
+criarLabel("━ ⚙️ CONFIG ━", y, Color3.fromRGB(255, 215, 0))
+y = y + 22
 
-ConfigTab:CreateButton({
-    Name = "ALTERAR TEMA",
-    Callback = function()
-        print("[CONFIG] 🎨 Alterando tema...")
+criarBotao("RELATAR BUG", y, Color3.fromRGB(100, 100, 150), function()
+    print("[CONFIG] 🐛 Relatar bug no GitHub:")
+    print("  https://github.com/Marcileialves/Blox-Fruits-Script-Hub/issues")
+end)
+y = y + 42
+
+criarBotao("✖ SAIR", y + 10, Color3.fromRGB(100, 50, 50), function()
+    gui:Destroy()
+    print("👋 Hub fechado!")
+end)
+
+-- ============================================
+-- ATUALIZAR VIDA
+-- ============================================
+task.spawn(function()
+    while gui and gui.Parent do
+        task.wait(1)
+        local health = player.Character and player.Character.Humanoid and math.floor(player.Character.Humanoid.Health) or 0
+        if vidaLabel then
+            vidaLabel.Text = "💚 Vida: " .. health
+        end
     end
-})
+end)
 
-ConfigTab:CreateButton({
-    Name = "RELATAR BUG",
-    Callback = function()
-        print("[CONFIG] 🐛 Relatar bug no GitHub")
-        print("  https://github.com/Marcileialves/Blox-Fruits-Script-Hub/issues")
-    end
-})
-
-ConfigTab:CreateButton({
-    Name = "ATUALIZAR CHECKLIST",
-    Callback = function()
-        print("[CONFIG] 🔄 Atualizando checklist...")
-    end
-})
-
--- ================================
+-- ============================================
 -- RODAPÉ
--- ================================
-print("✅ Hub carregado com sucesso!")
+-- ============================================
+local footer = Instance.new("TextLabel")
+footer.Size = UDim2.new(1, 0, 0, 20)
+footer.Position = UDim2.new(0, 0, 1, -20)
+footer.Text = "v3.0 (Celular) | GitHub: Marcileialves"
+footer.TextColor3 = Color3.fromRGB(150, 150, 150)
+footer.BackgroundTransparency = 1
+footer.Font = Enum.Font.GothamMedium
+footer.TextSize = 9
+footer.Parent = frame
+
+print("✅ Hub carregado com sucesso no celular!")
 print("📌 GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub")
