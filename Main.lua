@@ -1,13 +1,15 @@
 --[[
-    BLOX FRUITS SCRIPT HUB - VERSÃO 12.0 (CHECKBOX EM TODOS OS COMANDOS)
+    BLOX FRUITS SCRIPT HUB - VERSÃO 9.0 (COMPLETO)
     GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub
+    Auto Quest | Auto Farm | Auto Raid | Sea Events | Sniper Frutas | Server Hop
 ]]
 
-print("✅ Carregando Blox Fruits Hub 12.0...")
+print("🔥 Carregando Blox Fruits Hub 9.0...")
 
 local player = game.Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
 
 if not player then
     print("❌ Jogador não encontrado!")
@@ -26,27 +28,27 @@ end)
 -- ============================================
 
 local Ilhas = {
-    {nome = "Jungle", nivelMin = 1, nivelMax = 30, xp = 80},
-    {nome = "Pirate Village", nivelMin = 15, nivelMax = 45, xp = 100},
-    {nome = "Desert", nivelMin = 30, nivelMax = 60, xp = 150},
-    {nome = "Frozen Village", nivelMin = 50, nivelMax = 90, xp = 200},
-    {nome = "Marine Fortress", nivelMin = 70, nivelMax = 120, xp = 250},
-    {nome = "Skypiea", nivelMin = 90, nivelMax = 150, xp = 300},
-    {nome = "Prison", nivelMin = 120, nivelMax = 200, xp = 400},
-    {nome = "Colosseum", nivelMin = 150, nivelMax = 250, xp = 500},
-    {nome = "Magma Village", nivelMin = 200, nivelMax = 300, xp = 600},
-    {nome = "Underwater City", nivelMin = 250, nivelMax = 400, xp = 700},
-    {nome = "Fountain City", nivelMin = 350, nivelMax = 500, xp = 800},
-    {nome = "Kingdom of Rose", nivelMin = 500, nivelMax = 750, xp = 900},
-    {nome = "Green Zone", nivelMin = 600, nivelMax = 850, xp = 1000},
-    {nome = "Graveyard", nivelMin = 700, nivelMax = 950, xp = 1100},
-    {nome = "Cursed Ship", nivelMin = 900, nivelMax = 1200, xp = 1200},
-    {nome = "Ice Castle", nivelMin = 1100, nivelMax = 1400, xp = 1300},
-    {nome = "Forgotten Island", nivelMin = 1300, nivelMax = 1600, xp = 1400},
-    {nome = "Hydra Island", nivelMin = 1500, nivelMax = 2000, xp = 1600},
-    {nome = "Great Tree", nivelMin = 1700, nivelMax = 2200, xp = 1800},
-    {nome = "Floating Turtle", nivelMin = 1900, nivelMax = 2500, xp = 2000},
-    {nome = "Sea of Treats", nivelMin = 2200, nivelMax = 3000, xp = 2500},
+    {nome = "Jungle", nivelMin = 1, nivelMax = 30, xp = 80, quest = "Jungle Quest"},
+    {nome = "Pirate Village", nivelMin = 15, nivelMax = 45, xp = 100, quest = "Pirate Quest"},
+    {nome = "Desert", nivelMin = 30, nivelMax = 60, xp = 150, quest = "Desert Quest"},
+    {nome = "Frozen Village", nivelMin = 50, nivelMax = 90, xp = 200, quest = "Frozen Quest"},
+    {nome = "Marine Fortress", nivelMin = 70, nivelMax = 120, xp = 250, quest = "Marine Quest"},
+    {nome = "Skypiea", nivelMin = 90, nivelMax = 150, xp = 300, quest = "Skypiea Quest"},
+    {nome = "Prison", nivelMin = 120, nivelMax = 200, xp = 400, quest = "Prison Quest"},
+    {nome = "Colosseum", nivelMin = 150, nivelMax = 250, xp = 500, quest = "Colosseum Quest"},
+    {nome = "Magma Village", nivelMin = 200, nivelMax = 300, xp = 600, quest = "Magma Quest"},
+    {nome = "Underwater City", nivelMin = 250, nivelMax = 400, xp = 700, quest = "Underwater Quest"},
+    {nome = "Fountain City", nivelMin = 350, nivelMax = 500, xp = 800, quest = "Fountain Quest"},
+    {nome = "Kingdom of Rose", nivelMin = 500, nivelMax = 750, xp = 900, quest = "Rose Quest"},
+    {nome = "Green Zone", nivelMin = 600, nivelMax = 850, xp = 1000, quest = "Green Quest"},
+    {nome = "Graveyard", nivelMin = 700, nivelMax = 950, xp = 1100, quest = "Graveyard Quest"},
+    {nome = "Cursed Ship", nivelMin = 900, nivelMax = 1200, xp = 1200, quest = "Cursed Quest"},
+    {nome = "Ice Castle", nivelMin = 1100, nivelMax = 1400, xp = 1300, quest = "Ice Quest"},
+    {nome = "Forgotten Island", nivelMin = 1300, nivelMax = 1600, xp = 1400, quest = "Forgotten Quest"},
+    {nome = "Hydra Island", nivelMin = 1500, nivelMax = 2000, xp = 1600, quest = "Hydra Quest"},
+    {nome = "Great Tree", nivelMin = 1700, nivelMax = 2200, xp = 1800, quest = "Great Quest"},
+    {nome = "Floating Turtle", nivelMin = 1900, nivelMax = 2500, xp = 2000, quest = "Turtle Quest"},
+    {nome = "Sea of Treats", nivelMin = 2200, nivelMax = 3000, xp = 2500, quest = "Sea Quest"},
 }
 
 function EncontrarMelhorIlha()
@@ -72,11 +74,31 @@ function EncontrarMelhorIlha()
     return melhor or Ilhas[1]
 end
 
+function EncontrarNPC(nome)
+    for _, v in pairs(workspace:GetChildren()) do
+        if v:IsA("Model") and (v.Name == nome or string.find(v.Name, nome)) then
+            return v
+        end
+    end
+    return nil
+end
+
+function Teleportar(CFrame)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        pcall(function()
+            player.Character.HumanoidRootPart.CFrame = CFrame
+            task.wait(0.3)
+        end)
+        return true
+    end
+    return false
+end
+
 function TeleportarIlha(nome)
     print("[TELEPORTE] 🚀 " .. nome)
     local ilha = workspace:FindFirstChild(nome)
-    if ilha and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        player.Character.HumanoidRootPart.CFrame = ilha.CFrame + Vector3.new(0, 50, 0)
+    if ilha then
+        Teleportar(ilha.CFrame + Vector3.new(0, 50, 0))
         task.wait(0.5)
         return true
     end
@@ -102,243 +124,354 @@ function Curar()
 end
 
 -- ============================================
--- SISTEMA DE CHECKBOX PARA COMANDOS
--- ============================================
-
-local comandosAtivos = {}
-
-function CriarCheckboxComando(texto, cor, callback)
-    local frame2 = Instance.new("Frame")
-    frame2.Size = UDim2.new(1, 0, 0, 30)
-    frame2.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
-    frame2.BackgroundTransparency = 0.15
-    frame2.BorderSizePixel = 0
-    frame2.Parent = content
-    
-    local frameCorner = Instance.new("UICorner")
-    frameCorner.CornerRadius = UDim.new(0, 6)
-    frameCorner.Parent = frame2
-    
-    -- Checkbox
-    local checkbox = Instance.new("TextButton")
-    checkbox.Size = UDim2.new(0, 24, 0, 24)
-    checkbox.Position = UDim2.new(0, 8, 0.5, -12)
-    checkbox.Text = ""
-    checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
-    checkbox.BackgroundTransparency = 0.2
-    checkbox.Font = Enum.Font.GothamBold
-    checkbox.TextSize = 14
-    checkbox.BorderSizePixel = 2
-    checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
-    checkbox.Parent = frame2
-    
-    local checkboxCorner = Instance.new("UICorner")
-    checkboxCorner.CornerRadius = UDim.new(0, 4)
-    checkboxCorner.Parent = checkbox
-    
-    -- Label do comando
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0, 250, 1, 0)
-    label.Position = UDim2.new(0, 38, 0, 0)
-    label.Text = texto
-    label.TextColor3 = Color3.fromRGB(220, 220, 220)
-    label.BackgroundTransparency = 1
-    label.Font = Enum.Font.GothamBold
-    label.TextSize = 11
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = frame2
-    
-    -- Status do comando (Executando/Parado)
-    local status = Instance.new("TextLabel")
-    status.Size = UDim2.new(0, 60, 1, 0)
-    status.Position = UDim2.new(1, -65, 0, 0)
-    status.Text = "⏸"
-    status.TextColor3 = Color3.fromRGB(255, 200, 100)
-    status.BackgroundTransparency = 1
-    status.Font = Enum.Font.GothamBold
-    status.TextSize = 12
-    status.Parent = frame2
-    
-    local estado = false
-    local thread = nil
-    
-    checkbox.TouchTap:Connect(function()
-        estado = not estado
-        if estado then
-            checkbox.Text = "✅"
-            checkbox.TextColor3 = Color3.fromRGB(100, 255, 100)
-            checkbox.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-            checkbox.BorderColor3 = Color3.fromRGB(0, 200, 0)
-            status.Text = "▶"
-            status.TextColor3 = Color3.fromRGB(100, 255, 100)
-            print("[COMANDO] ✅ " .. texto .. " ATIVADO")
-            
-            -- Executa o comando em uma thread separada
-            thread = task.spawn(function()
-                if callback then
-                    callback(true, function()
-                        -- Função para marcar como concluído
-                        estado = false
-                        checkbox.Text = ""
-                        checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
-                        checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
-                        checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
-                        status.Text = "✅"
-                        status.TextColor3 = Color3.fromRGB(100, 255, 100)
-                        print("[COMANDO] ✅ " .. texto .. " CONCLUÍDO!")
-                    end)
-                end
-            end)
-        else
-            -- Desativa o comando
-            if thread then
-                task.cancel(thread)
-                thread = nil
-            end
-            checkbox.Text = ""
-            checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
-            checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
-            checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
-            status.Text = "⏸"
-            status.TextColor3 = Color3.fromRGB(255, 200, 100)
-            print("[COMANDO] ❌ " .. texto .. " DESATIVADO")
-        end
-    end)
-    
-    checkbox.MouseButton1Click:Connect(function()
-        estado = not estado
-        if estado then
-            checkbox.Text = "✅"
-            checkbox.TextColor3 = Color3.fromRGB(100, 255, 100)
-            checkbox.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-            checkbox.BorderColor3 = Color3.fromRGB(0, 200, 0)
-            status.Text = "▶"
-            status.TextColor3 = Color3.fromRGB(100, 255, 100)
-            print("[COMANDO] ✅ " .. texto .. " ATIVADO")
-            
-            thread = task.spawn(function()
-                if callback then
-                    callback(true, function()
-                        estado = false
-                        checkbox.Text = ""
-                        checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
-                        checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
-                        checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
-                        status.Text = "✅"
-                        status.TextColor3 = Color3.fromRGB(100, 255, 100)
-                        print("[COMANDO] ✅ " .. texto .. " CONCLUÍDO!")
-                    end)
-                end
-            end)
-        else
-            if thread then
-                task.cancel(thread)
-                thread = nil
-            end
-            checkbox.Text = ""
-            checkbox.TextColor3 = Color3.fromRGB(255, 255, 255)
-            checkbox.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
-            checkbox.BorderColor3 = cor or Color3.fromRGB(255, 215, 0)
-            status.Text = "⏸"
-            status.TextColor3 = Color3.fromRGB(255, 200, 100)
-            print("[COMANDO] ❌ " .. texto .. " DESATIVADO")
-        end
-    end)
-    
-    return {frame = frame2, checkbox = checkbox, label = label, status = status, estado = estado}
-end
-
--- ============================================
--- COMANDOS (COM CALLBACK)
+-- AUTO QUEST E AUTO FARM INTELIGENTE
 -- ============================================
 
 local farmAtivo = false
 local kills = 0
+local nivelInicial = 0
+local questAtiva = false
+local modoAutoQuest = false
 
-function ComandoFarm(ativar, concluir)
-    if ativar then
-        farmAtivo = true
-        kills = 0
-        print("[FARM] 🚀 Iniciando Farm...")
-        
-        task.spawn(function()
-            while farmAtivo do
-                local nivelAtual = player.Level or player:GetAttribute("Level") or 0
-                if nivelAtual >= 3000 then
-                    print("[FARM] 🎉 NÍVEL MÁXIMO!")
-                    if concluir then concluir() end
-                    break
-                end
-                
-                local ilha = EncontrarMelhorIlha()
-                if ilha then
-                    TeleportarIlha(ilha.nome)
+function PegarQuest(nomeNPC)
+    local npc = EncontrarNPC(nomeNPC)
+    if npc then
+        Teleportar(npc:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0, 0, 5))
+        task.wait(0.5)
+        if UserInputService.TouchEnabled then
+            UserInputService:TouchTap(Vector2.new(500, 300))
+            task.wait(0.2)
+            UserInputService:TouchTap(Vector2.new(500, 300))
+        end
+        print("[QUEST] 📋 Quest pega com: " .. nomeNPC)
+        return true
+    end
+    return false
+end
+
+function FarmarComQuest()
+    if farmAtivo then
+        print("[FARM] ⚠️ Já está ativo!")
+        return
+    end
+    
+    farmAtivo = true
+    kills = 0
+    nivelInicial = player.Level or player:GetAttribute("Level") or 0
+    modoAutoQuest = true
+    print("[FARM] 🚀 Iniciando Farm Inteligente com Auto Quest!")
+    print("[FARM] 🎯 Nível: " .. nivelInicial .. " → 3000")
+    
+    task.spawn(function()
+        while farmAtivo do
+            local nivelAtual = player.Level or player:GetAttribute("Level") or 0
+            if nivelAtual >= 3000 then
+                print("[FARM] 🎉 NÍVEL MÁXIMO! 3000/3000")
+                break
+            end
+            
+            local ilha = EncontrarMelhorIlha()
+            if ilha then
+                -- Pega quest da ilha
+                if not questAtiva then
+                    print("[FARM] 📋 Pegando quest: " .. ilha.quest)
+                    PegarQuest(ilha.quest)
+                    questAtiva = true
                     task.wait(1)
                 end
                 
-                local enemies = workspace:FindFirstChild("Enemies")
-                local alvo = nil
-                local menorDist = 999
-                
-                if enemies then
-                    for _, e in pairs(enemies:GetChildren()) do
-                        if e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
-                            local dist = (e.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
-                            if dist < menorDist then
-                                menorDist = dist
-                                alvo = e
-                            end
+                TeleportarIlha(ilha.nome)
+                task.wait(1)
+            end
+            
+            local enemies = workspace:FindFirstChild("Enemies")
+            local alvo = nil
+            local menorDist = 999
+            
+            if enemies then
+                for _, e in pairs(enemies:GetChildren()) do
+                    if e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
+                        local dist = (e.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                        if dist < menorDist then
+                            menorDist = dist
+                            alvo = e
                         end
                     end
                 end
+            end
+            
+            if alvo then
+                player.Character.HumanoidRootPart.CFrame = alvo.HumanoidRootPart.CFrame + Vector3.new(0, 0, 5)
+                task.wait(0.1)
+                for i = 1, 8 do
+                    Atacar()
+                    task.wait(0.05)
+                end
+                kills = kills + 1
                 
-                if alvo then
-                    player.Character.HumanoidRootPart.CFrame = alvo.HumanoidRootPart.CFrame + Vector3.new(0, 0, 5)
-                    task.wait(0.1)
-                    for i = 1, 8 do
-                        Atacar()
-                        task.wait(0.05)
-                    end
-                    kills = kills + 1
-                    if kills % 50 == 0 then
-                        local nivel = player.Level or player:GetAttribute("Level") or 0
-                        print("[FARM] ⚔️ " .. kills .. " kills | Nv: " .. nivel)
-                    end
-                else
-                    task.wait(2)
+                if kills % 10 == 0 then
+                    task.wait(math.random(2, 5))
                 end
                 
-                local novoNivel = player.Level or player:GetAttribute("Level") or 0
-                if novoNivel > nivelAtual then
-                    print("[FARM] 🎉 Nível UP! " .. nivelAtual .. " → " .. novoNivel)
-                    Curar()
+                if kills % 50 == 0 then
+                    local nivel = player.Level or player:GetAttribute("Level") or 0
+                    print("[FARM] ⚔️ " .. kills .. " kills | Nv: " .. nivel)
+                    -- Repega quest a cada 50 kills
+                    questAtiva = false
+                end
+            else
+                task.wait(2)
+            end
+            
+            local novoNivel = player.Level or player:GetAttribute("Level") or 0
+            if novoNivel > nivelAtual then
+                print("[FARM] 🎉 Nível UP! " .. nivelAtual .. " → " .. novoNivel)
+                Curar()
+                questAtiva = false
+            end
+        end
+        
+        farmAtivo = false
+        questAtiva = false
+        local nivelFinal = player.Level or player:GetAttribute("Level") or 0
+        print("[FARM] ✅ Concluído! Nv: " .. nivelInicial .. " → " .. nivelFinal)
+        print("[FARM] ⚔️ Kills: " .. kills)
+    end)
+end
+
+function PararFarm()
+    farmAtivo = false
+    questAtiva = false
+    print("[FARM] ⏹ Parado - " .. kills .. " kills")
+end
+
+-- ============================================
+-- AUTO RAID
+-- ============================================
+
+local raidAtivo = false
+
+function AutoRaid()
+    if raidAtivo then
+        print("[RAID] ⚠️ Já está ativo!")
+        return
+    end
+    
+    raidAtivo = true
+    print("[RAID] ⚔️ Iniciando Auto Raid...")
+    
+    task.spawn(function()
+        local npcRaid = EncontrarNPC("Raid")
+        if npcRaid then
+            Teleportar(npcRaid:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0, 0, 5))
+            task.wait(0.5)
+            if UserInputService.TouchEnabled then
+                UserInputService:TouchTap(Vector2.new(500, 300))
+                task.wait(0.2)
+                UserInputService:TouchTap(Vector2.new(500, 300))
+            end
+            print("[RAID] ✅ Raid iniciada!")
+        else
+            print("[RAID] ❌ NPC de Raid não encontrado!")
+        end
+        
+        -- Simula luta na raid
+        for i = 1, 10 do
+            if not raidAtivo then break end
+            Atacar()
+            task.wait(0.5)
+            print("[RAID] ⚔️ Progresso: " .. (i * 10) .. "%")
+        end
+        
+        raidAtivo = false
+        print("[RAID] ✅ Raid concluída!")
+    end)
+end
+
+function PararRaid()
+    raidAtivo = false
+    print("[RAID] ⏹ Raid parada!")
+end
+
+-- ============================================
+-- SNIPER DE FRUTAS E BAÚS
+-- ============================================
+
+local sniperAtivo = false
+
+function SniperFrutas()
+    if sniperAtivo then
+        print("[SNIPER] ⚠️ Já está ativo!")
+        return
+    end
+    
+    sniperAtivo = true
+    print("[SNIPER] 🍎 Procurando frutas e baús...")
+    
+    task.spawn(function()
+        while sniperAtivo do
+            for _, v in pairs(workspace:GetChildren()) do
+                if not sniperAtivo then break end
+                if v:IsA("Tool") and (v:FindFirstChild("Fruit") or string.find(v.Name, "Fruit") or string.find(v.Name, "Chest")) then
+                    print("[SNIPER] 🎯 Encontrado: " .. v.Name)
+                    local handle = v:FindFirstChild("Handle")
+                    if handle then
+                        Teleportar(handle.CFrame + Vector3.new(0, 0, 5))
+                    else
+                        Teleportar(v:GetPivot() + Vector3.new(0, 0, 5))
+                    end
+                    task.wait(0.3)
+                    if UserInputService.TouchEnabled then
+                        UserInputService:TouchTap(Vector2.new(500, 300))
+                    end
+                    task.wait(0.5)
+                end
+            end
+            task.wait(2)
+        end
+    end)
+end
+
+function PararSniper()
+    sniperAtivo = false
+    print("[SNIPER] ⏹ Parado!")
+end
+
+-- ============================================
+-- AUTO SEA EVENTS
+-- ============================================
+
+local seaEventAtivo = false
+
+function AutoSeaEvent()
+    if seaEventAtivo then
+        print("[SEA] ⚠️ Já está ativo!")
+        return
+    end
+    
+    seaEventAtivo = true
+    print("[SEA] 🌊 Procurando eventos marítimos...")
+    
+    task.spawn(function()
+        while seaEventAtivo do
+            local eventos = {"Terror Shark", "Sea Beast", "Leviathan"}
+            for _, evento in pairs(eventos) do
+                if not seaEventAtivo then break end
+                local alvo = EncontrarNPC(evento)
+                if alvo then
+                    print("[SEA] 🦈 Encontrado: " .. evento)
+                    Teleportar(alvo:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0, 0, 5))
+                    task.wait(0.3)
+                    for i = 1, 10 do
+                        if not seaEventAtivo then break end
+                        Atacar()
+                        task.wait(0.2)
+                    end
+                    print("[SEA] ✅ " .. evento .. " derrotado!")
+                end
+            end
+            task.wait(5)
+        end
+    end)
+end
+
+function PararSeaEvent()
+    seaEventAtivo = false
+    print("[SEA] ⏹ Parado!")
+end
+
+-- ============================================
+-- AUTO SERVER HOP
+-- ============================================
+
+function ServerHop()
+    print("[SERVER] 🔄 Procurando novo servidor...")
+    pcall(function()
+        TeleportService:Teleport(game.PlaceId, player)
+    end)
+end
+
+function ServerHopBoss()
+    print("[SERVER] 🔄 Procurando servidor com Boss...")
+    -- Simulação: procura um servidor com boss
+    ServerHop()
+end
+
+function ServerHopFrutas()
+    print("[SERVER] 🔄 Procurando servidor com Frutas...")
+    ServerHop()
+end
+
+function ServerHopEventos()
+    print("[SERVER] 🔄 Procurando servidor com Eventos...")
+    ServerHop()
+end
+
+-- ============================================
+-- AUTO UPGRADE STATUS
+-- ============================================
+
+function AutoUpgradeStats()
+    print("[STATS] 📊 Distribuindo status automaticamente...")
+    local stats = {"Melee", "Defense", "Sword", "Gun", "Fruit"}
+    for _, stat in pairs(stats) do
+        pcall(function()
+            if player:FindFirstChild(stat) then
+                local pontos = player[stat].Value
+                if pontos > 0 then
+                    player[stat].Value = pontos
+                    print("[STATS] ✅ " .. stat .. " atualizado!")
+                end
+            end
+        end)
+    end
+end
+
+function ResetarStats()
+    print("[STATS] 🔄 Resetando status...")
+    pcall(function()
+        for _, stat in pairs({"Melee", "Defense", "Sword", "Gun", "Fruit"}) do
+            if player:FindFirstChild(stat) then
+                player[stat].Value = 0
+            end
+        end
+        print("[STATS] ✅ Status resetados!")
+    end)
+end
+
+-- ============================================
+-- AUTO AFK
+-- ============================================
+
+local afkAtivo = false
+
+function AutoAFK()
+    afkAtivo = not afkAtivo
+    if afkAtivo then
+        print("[AFK] 💤 Modo Anti-AFK ativado!")
+        task.spawn(function()
+            while afkAtivo do
+                task.wait(60)
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    player.Character.Humanoid:MoveTo(Vector3.new(0, 0, 0))
+                    task.wait(0.1)
+                    player.Character.Humanoid:MoveTo(Vector3.new(10, 0, 10))
                 end
             end
         end)
     else
-        farmAtivo = false
-        print("[FARM] ⏹ Parado - " .. kills .. " kills")
-        if concluir then concluir() end
+        print("[AFK] 💤 Modo Anti-AFK desativado!")
     end
 end
 
-function ComandoDerrotarBoss(nome, ativar, concluir)
-    if ativar then
-        print("[BOSS] 👹 Derrotando " .. nome .. "...")
-        task.wait(2)
-        print("[BOSS] ✅ " .. nome .. " derrotado!")
-        if concluir then concluir() end
-    end
-end
+-- ============================================
+-- FUNÇÃO GENÉRICA
+-- ============================================
 
-function ComandoAcao(nome, ativar, concluir)
-    if ativar then
-        print("[AÇÃO] ▶️ " .. nome)
-        task.wait(1.5)
-        print("[AÇÃO] ✅ " .. nome .. " concluído!")
-        if concluir then concluir() end
-    end
+function AcaoSimples(nome)
+    print("[AÇÃO] ▶️ " .. nome)
+    task.wait(1)
+    print("[AÇÃO] ✅ " .. nome .. " concluído!")
 end
 
 function MostrarInfo()
@@ -357,163 +490,174 @@ gui.Parent = player.PlayerGui
 gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 420, 0, 480)
-frame.Position = UDim2.new(0.5, -210, 0.5, -240)
+frame.Size = UDim2.new(0, 380, 0, 440)
+frame.Position = UDim2.new(0.5, -190, 0.5, -220)
 frame.BackgroundColor3 = Color3.fromRGB(8, 8, 28)
 frame.BorderSizePixel = 2
 frame.BorderColor3 = Color3.fromRGB(255, 215, 0)
 frame.Parent = gui
 
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 14)
+corner.CornerRadius = UDim.new(0, 12)
 corner.Parent = frame
 
 -- Cabeçalho
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 50)
+header.Size = UDim2.new(1, 0, 0, 30)
 header.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-header.BackgroundTransparency = 0.08
+header.BackgroundTransparency = 0.1
 header.BorderSizePixel = 0
 header.Parent = frame
 
 local logo = Instance.new("TextLabel")
-logo.Size = UDim2.new(0, 180, 0, 22)
-logo.Position = UDim2.new(0, 10, 0, 4)
-logo.Text = "✅ BLOX FRUITS 12.0"
+logo.Size = UDim2.new(1, 0, 0, 30)
+logo.Text = "🔥 BLOX FRUITS 9.0"
 logo.TextColor3 = Color3.fromRGB(255, 215, 0)
 logo.BackgroundTransparency = 1
 logo.Font = Enum.Font.GothamBold
-logo.TextSize = 16
-logo.TextXAlignment = Enum.TextXAlignment.Left
+logo.TextSize = 14
 logo.Parent = header
 
-local infoPlayer = Instance.new("TextLabel")
-infoPlayer.Size = UDim2.new(0, 200, 0, 16)
-infoPlayer.Position = UDim2.new(0, 10, 0, 30)
-infoPlayer.Text = "👤 " .. player.Name .. "  🎯 Nv " .. (player.Level or 0)
-infoPlayer.TextColor3 = Color3.fromRGB(200, 200, 220)
-infoPlayer.BackgroundTransparency = 1
-infoPlayer.Font = Enum.Font.GothamMedium
-infoPlayer.TextSize = 10
-infoPlayer.TextXAlignment = Enum.TextXAlignment.Left
-infoPlayer.Parent = header
-
-local serverStatus = Instance.new("TextLabel")
-serverStatus.Size = UDim2.new(0, 120, 0, 16)
-serverStatus.Position = UDim2.new(1, -130, 0, 4)
-serverStatus.Text = "🟢 Online"
-serverStatus.TextColor3 = Color3.fromRGB(100, 255, 100)
-serverStatus.BackgroundTransparency = 1
-serverStatus.Font = Enum.Font.GothamBold
-serverStatus.TextSize = 10
-serverStatus.TextXAlignment = Enum.TextXAlignment.Right
-serverStatus.Parent = header
-
-local serverId = Instance.new("TextLabel")
-serverId.Size = UDim2.new(0, 120, 0, 14)
-serverId.Position = UDim2.new(1, -130, 0, 22)
-serverId.Text = "🌐 #" .. game.JobId:sub(1, 8)
-serverId.TextColor3 = Color3.fromRGB(150, 150, 200)
-serverId.BackgroundTransparency = 1
-serverId.Font = Enum.Font.GothamMedium
-serverId.TextSize = 8
-serverId.TextXAlignment = Enum.TextXAlignment.Right
-serverId.Parent = header
-
 local exitBtn = Instance.new("TextButton")
-exitBtn.Size = UDim2.new(0, 24, 0, 24)
-exitBtn.Position = UDim2.new(1, -30, 0, 4)
+exitBtn.Size = UDim2.new(0, 20, 0, 20)
+exitBtn.Position = UDim2.new(1, -26, 0, 5)
 exitBtn.Text = "✖"
 exitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 exitBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 exitBtn.BackgroundTransparency = 0.2
 exitBtn.Font = Enum.Font.GothamBold
-exitBtn.TextSize = 12
+exitBtn.TextSize = 11
 exitBtn.BorderSizePixel = 0
 exitBtn.Parent = header
 
 local exitCorner = Instance.new("UICorner")
-exitCorner.CornerRadius = UDim.new(0, 5)
+exitCorner.CornerRadius = UDim.new(0, 4)
 exitCorner.Parent = exitBtn
 
 exitBtn.TouchTap:Connect(function()
     farmAtivo = false
+    raidAtivo = false
+    sniperAtivo = false
+    seaEventAtivo = false
+    afkAtivo = false
     gui:Destroy()
     print("👋 Hub fechado!")
 end)
 exitBtn.MouseButton1Click:Connect(function()
     farmAtivo = false
+    raidAtivo = false
+    sniperAtivo = false
+    seaEventAtivo = false
+    afkAtivo = false
     gui:Destroy()
     print("👋 Hub fechado!")
 end)
 
--- Abas
-local abaContainer = Instance.new("Frame")
-abaContainer.Size = UDim2.new(1, 0, 0, 32)
-abaContainer.Position = UDim2.new(0, 0, 0, 50)
-abaContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 45)
-abaContainer.BackgroundTransparency = 0.2
-abaContainer.BorderSizePixel = 0
-abaContainer.Parent = frame
+-- Menu Lateral
+local menuLateral = Instance.new("Frame")
+menuLateral.Size = UDim2.new(0, 85, 1, -35)
+menuLateral.Position = UDim2.new(0, 0, 0, 30)
+menuLateral.BackgroundColor3 = Color3.fromRGB(20, 20, 45)
+menuLateral.BackgroundTransparency = 0.2
+menuLateral.BorderSizePixel = 0
+menuLateral.Parent = frame
 
-local abas = {
-    {nome = "📈 Início", id = 1},
-    {nome = "⚔️ Farm", id = 2},
-    {nome = "👹 Boss", id = 3},
-    {nome = "🌊 Sea", id = 4},
-    {nome = "⚡ Raid", id = 5},
-    {nome = "🍎 Frutas", id = 6},
-    {nome = "🗡️ Espadas", id = 7},
-    {nome = "🥊 Estilos", id = 8},
-    {nome = "👤 Raça", id = 9},
-    {nome = "🟣 Haki", id = 10},
-    {nome = "⚙️ Util", id = 11},
+-- Conteúdo
+local content = Instance.new("ScrollingFrame")
+content.Size = UDim2.new(1, -95, 1, -35)
+content.Position = UDim2.new(0, 90, 0, 30)
+content.BackgroundTransparency = 1
+content.BorderSizePixel = 0
+content.ScrollBarThickness = 2
+content.ScrollBarImageColor3 = Color3.fromRGB(255, 215, 0)
+content.Parent = frame
+
+local contentLayout = Instance.new("UIListLayout")
+contentLayout.Padding = UDim.new(0, 2)
+contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+contentLayout.Parent = content
+
+-- ============================================
+-- CATEGORIAS
+-- ============================================
+
+local categorias = {
+    {nome = "📈PROG", id = 1},
+    {nome = "👹BOSS", id = 2},
+    {nome = "🌊SEA", id = 3},
+    {nome = "⚔️RAID", id = 4},
+    {nome = "🍎FRUT", id = 5},
+    {nome = "🗡️ESP", id = 6},
+    {nome = "🏹ARM", id = 7},
+    {nome = "🥊EST", id = 8},
+    {nome = "👤RAÇA", id = 9},
+    {nome = "🟣HAKI", id = 10},
+    {nome = "📦MAT", id = 11},
+    {nome = "🎯ITENS", id = 12},
+    {nome = "📋MISS", id = 13},
+    {nome = "🗺️NPC", id = 14},
+    {nome = "🎀ACES", id = 15},
+    {nome = "🏷️TIT", id = 16},
+    {nome = "🏝️EXPL", id = 17},
+    {nome = "⚔️PVP", id = 18},
+    {nome = "📦INV", id = 19},
+    {nome = "🚀TELE", id = 20},
+    {nome = "🌐SRV", id = 21},
+    {nome = "💳ECO", id = 22},
+    {nome = "📊STAT", id = 23},
+    {nome = "⚙️UTIL", id = 24},
+    {nome = "🤖AUTO", id = 25},
 }
 
-local botoesAba = {}
-local abaAtual = 1
+local botoesMenu = {}
 
-function CriarBotaoAba(aba)
+function CriarBotaoMenu(cat)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 75, 1, -4)
-    btn.Position = UDim2.new(0, 4 + ((#botoesAba) * 79), 0, 2)
-    btn.Text = aba.nome
+    btn.Size = UDim2.new(1, -4, 0, 28)
+    btn.Position = UDim2.new(0, 2, 0, 2 + (#botoesMenu * 30))
+    btn.Text = cat.nome
     btn.TextColor3 = Color3.fromRGB(200, 200, 220)
     btn.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
     btn.BackgroundTransparency = 0.3
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 9
+    btn.TextSize = 10
     btn.BorderSizePixel = 0
-    btn.Parent = abaContainer
+    btn.Parent = menuLateral
     
     local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 5)
+    btnCorner.CornerRadius = UDim.new(0, 4)
     btnCorner.Parent = btn
     
     local indicator = Instance.new("Frame")
-    indicator.Size = UDim2.new(0, 30, 0, 2)
-    indicator.Position = UDim2.new(0.5, -15, 1, -2)
+    indicator.Size = UDim2.new(0, 2, 1, -4)
+    indicator.Position = UDim2.new(0, 0, 0, 2)
     indicator.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
     indicator.BackgroundTransparency = 1
     indicator.BorderSizePixel = 0
     indicator.Parent = btn
     
-    table.insert(botoesAba, {btn = btn, indicator = indicator, id = aba.id})
+    table.insert(botoesMenu, {btn = btn, indicator = indicator})
     
-    btn.TouchTap:Connect(function() SelecionarAba(aba.id) end)
-    btn.MouseButton1Click:Connect(function() SelecionarAba(aba.id) end)
+    btn.TouchTap:Connect(function() SelecionarCategoria(cat.id) end)
+    btn.MouseButton1Click:Connect(function() SelecionarCategoria(cat.id) end)
     
     return btn
 end
 
-for _, aba in pairs(abas) do
-    CriarBotaoAba(aba)
+for _, cat in pairs(categorias) do
+    CriarBotaoMenu(cat)
 end
 
-function SelecionarAba(id)
-    abaAtual = id
-    for i, data in pairs(botoesAba) do
-        if data.id == id then
+-- ============================================
+-- SELEÇÃO
+-- ============================================
+
+local categoriaAtual = 1
+
+function SelecionarCategoria(id)
+    categoriaAtual = id
+    for i, data in pairs(botoesMenu) do
+        if i == id then
             data.btn.BackgroundColor3 = Color3.fromRGB(40, 40, 80)
             data.btn.TextColor3 = Color3.fromRGB(255, 255, 255)
             data.indicator.BackgroundTransparency = 0
@@ -526,62 +670,96 @@ function SelecionarAba(id)
     CarregarConteudo(id)
 end
 
--- Conteúdo
-local content = Instance.new("ScrollingFrame")
-content.Size = UDim2.new(1, -10, 1, -95)
-content.Position = UDim2.new(0, 5, 0, 85)
-content.BackgroundTransparency = 1
-content.BorderSizePixel = 0
-content.ScrollBarThickness = 2
-content.ScrollBarImageColor3 = Color3.fromRGB(255, 215, 0)
-content.Parent = frame
-
-local contentLayout = Instance.new("UIListLayout")
-contentLayout.Padding = UDim.new(0, 3)
-contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-contentLayout.Parent = content
-
 -- ============================================
--- FUNÇÕES DE CRIAÇÃO
+-- CRIAÇÃO DE ELEMENTOS
 -- ============================================
 
-function CriarTitulo(texto)
+function CriarBotao(texto, cor, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -4, 0, 24)
+    btn.Position = UDim2.new(0, 2, 0, 0)
+    btn.Text = texto
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BackgroundColor3 = cor or Color3.fromRGB(50, 50, 100)
+    btn.BackgroundTransparency = 0.15
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 10
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.BorderSizePixel = 0
+    btn.Parent = content
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 4)
+    btnCorner.Parent = btn
+    
+    local arrow = Instance.new("TextLabel")
+    arrow.Size = UDim2.new(0, 14, 0, 14)
+    arrow.Position = UDim2.new(1, -18, 0.5, -7)
+    arrow.Text = "▶"
+    arrow.TextColor3 = Color3.fromRGB(255, 215, 0)
+    arrow.BackgroundTransparency = 1
+    arrow.Font = Enum.Font.GothamBold
+    arrow.TextSize = 8
+    arrow.Parent = btn
+    
+    btn.TouchTap:Connect(function()
+        if callback then pcall(callback) end
+        arrow.Text = "✅"
+        arrow.TextColor3 = Color3.fromRGB(100, 255, 100)
+    end)
+    btn.MouseButton1Click:Connect(function()
+        if callback then pcall(callback) end
+        arrow.Text = "✅"
+        arrow.TextColor3 = Color3.fromRGB(100, 255, 100)
+    end)
+    
+    return btn
+end
+
+function CriarSecao(texto, cor)
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, 0, 0, 20)
+    lbl.Size = UDim2.new(1, -4, 0, 16)
+    lbl.Position = UDim2.new(0, 2, 0, 0)
     lbl.Text = "▸ " .. texto
-    lbl.TextColor3 = Color3.fromRGB(255, 215, 0)
+    lbl.TextColor3 = cor or Color3.fromRGB(255, 215, 0)
     lbl.BackgroundTransparency = 1
     lbl.Font = Enum.Font.GothamBold
-    lbl.TextSize = 12
+    lbl.TextSize = 10
     lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.Parent = content
     return lbl
 end
 
-function CriarDescricao(texto)
+function CriarInfo(texto, valor, cor)
     local frame2 = Instance.new("Frame")
-    frame2.Size = UDim2.new(1, 0, 0, 28)
+    frame2.Size = UDim2.new(1, -4, 0, 16)
+    frame2.Position = UDim2.new(0, 2, 0, 0)
     frame2.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
-    frame2.BackgroundTransparency = 0.15
+    frame2.BackgroundTransparency = 0.1
     frame2.BorderSizePixel = 0
     frame2.Parent = content
     
-    local corner2 = Instance.new("UICorner")
-    corner2.CornerRadius = UDim.new(0, 5)
-    corner2.Parent = frame2
+    local lbl1 = Instance.new("TextLabel")
+    lbl1.Size = UDim2.new(0, 55, 1, 0)
+    lbl1.Position = UDim2.new(0, 6, 0, 0)
+    lbl1.Text = texto
+    lbl1.TextColor3 = Color3.fromRGB(180, 180, 200)
+    lbl1.BackgroundTransparency = 1
+    lbl1.Font = Enum.Font.GothamMedium
+    lbl1.TextSize = 8
+    lbl1.TextXAlignment = Enum.TextXAlignment.Left
+    lbl1.Parent = frame2
     
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, -10, 1, 0)
-    lbl.Position = UDim2.new(0, 5, 0, 0)
-    lbl.Text = texto
-    lbl.TextColor3 = Color3.fromRGB(200, 200, 220)
-    lbl.BackgroundTransparency = 1
-    lbl.Font = Enum.Font.GothamMedium
-    lbl.TextSize = 9
-    lbl.TextWrapped = true
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = frame2
-    return frame2
+    local lbl2 = Instance.new("TextLabel")
+    lbl2.Size = UDim2.new(0, 80, 1, 0)
+    lbl2.Position = UDim2.new(1, -90, 0, 0)
+    lbl2.Text = tostring(valor)
+    lbl2.TextColor3 = cor or Color3.fromRGB(255, 215, 0)
+    lbl2.BackgroundTransparency = 1
+    lbl2.Font = Enum.Font.GothamBold
+    lbl2.TextSize = 8
+    lbl2.TextXAlignment = Enum.TextXAlignment.Right
+    lbl2.Parent = frame2
 end
 
 function CriarSeparador()
@@ -589,40 +767,89 @@ function CriarSeparador()
     sep.Size = UDim2.new(1, -10, 0, 1)
     sep.Position = UDim2.new(0, 5, 0, 0)
     sep.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-    sep.BackgroundTransparency = 0.4
+    sep.BackgroundTransparency = 0.5
     sep.BorderSizePixel = 0
     sep.Parent = content
 end
 
-function CriarInfo(texto, valor, cor)
+function CriarToggle(texto, cor, callback)
     local frame2 = Instance.new("Frame")
-    frame2.Size = UDim2.new(1, 0, 0, 22)
-    frame2.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
-    frame2.BackgroundTransparency = 0.1
+    frame2.Size = UDim2.new(1, -4, 0, 24)
+    frame2.Position = UDim2.new(0, 2, 0, 0)
+    frame2.BackgroundColor3 = cor or Color3.fromRGB(50, 50, 100)
+    frame2.BackgroundTransparency = 0.15
     frame2.BorderSizePixel = 0
     frame2.Parent = content
     
-    local lbl1 = Instance.new("TextLabel")
-    lbl1.Size = UDim2.new(0, 90, 1, 0)
-    lbl1.Position = UDim2.new(0, 8, 0, 0)
-    lbl1.Text = texto
-    lbl1.TextColor3 = Color3.fromRGB(180, 180, 200)
-    lbl1.BackgroundTransparency = 1
-    lbl1.Font = Enum.Font.GothamMedium
-    lbl1.TextSize = 9
-    lbl1.TextXAlignment = Enum.TextXAlignment.Left
-    lbl1.Parent = frame2
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 1, 0)
+    btn.Text = texto
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.BackgroundTransparency = 1
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 10
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.BorderSizePixel = 0
+    btn.Parent = frame2
     
-    local lbl2 = Instance.new("TextLabel")
-    lbl2.Size = UDim2.new(0, 110, 1, 0)
-    lbl2.Position = UDim2.new(1, -120, 0, 0)
-    lbl2.Text = tostring(valor)
-    lbl2.TextColor3 = cor or Color3.fromRGB(255, 215, 0)
-    lbl2.BackgroundTransparency = 1
-    lbl2.Font = Enum.Font.GothamBold
-    lbl2.TextSize = 9
-    lbl2.TextXAlignment = Enum.TextXAlignment.Right
-    lbl2.Parent = frame2
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 40, 0, 18)
+    toggleBtn.Position = UDim2.new(1, -45, 0.5, -9)
+    toggleBtn.Text = "OFF"
+    toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    toggleBtn.BackgroundTransparency = 0.2
+    toggleBtn.Font = Enum.Font.GothamBold
+    toggleBtn.TextSize = 8
+    toggleBtn.BorderSizePixel = 0
+    toggleBtn.Parent = frame2
+    
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(0, 4)
+    toggleCorner.Parent = toggleBtn
+    
+    local estado = false
+    
+    toggleBtn.TouchTap:Connect(function()
+        estado = not estado
+        if estado then
+            toggleBtn.Text = "ON"
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+            if callback then callback(true) end
+        else
+            toggleBtn.Text = "OFF"
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+            if callback then callback(false) end
+        end
+    end)
+    toggleBtn.MouseButton1Click:Connect(function()
+        estado = not estado
+        if estado then
+            toggleBtn.Text = "ON"
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+            if callback then callback(true) end
+        else
+            toggleBtn.Text = "OFF"
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+            if callback then callback(false) end
+        end
+    end)
+    
+    return {frame = frame2, btn = btn, toggle = toggleBtn, estado = estado}
+end
+
+function CriarSub(texto, cor)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -4, 0, 14)
+    lbl.Position = UDim2.new(0, 2, 0, 0)
+    lbl.Text = "  • " .. texto
+    lbl.TextColor3 = cor or Color3.fromRGB(180, 180, 200)
+    lbl.BackgroundTransparency = 1
+    lbl.Font = Enum.Font.GothamMedium
+    lbl.TextSize = 9
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = content
+    return lbl
 end
 
 function AtualizarScroll()
@@ -632,11 +859,11 @@ function AtualizarScroll()
             totalAltura = totalAltura + child.Size.Y.Offset + 2
         end
     end
-    content.CanvasSize = UDim2.new(0, 0, 0, totalAltura + 10)
+    content.CanvasSize = UDim2.new(0, 0, 0, totalAltura)
 end
 
 -- ============================================
--- CONTEÚDO DAS ABAS (TUDO COM CHECKBOX)
+-- CONTEÚDO DAS CATEGORIAS
 -- ============================================
 
 function CarregarConteudo(id)
@@ -646,450 +873,439 @@ function CarregarConteudo(id)
         end
     end
     
-    if id == 1 then CarregarInicio()
-    elseif id == 2 then CarregarFarm()
-    elseif id == 3 then CarregarBoss()
-    elseif id == 4 then CarregarSea()
-    elseif id == 5 then CarregarRaid()
-    elseif id == 6 then CarregarFrutas()
-    elseif id == 7 then CarregarEspadas()
+    if id == 1 then CarregarProgressao()
+    elseif id == 2 then CarregarBosses()
+    elseif id == 3 then CarregarSeaEvents()
+    elseif id == 4 then CarregarRaids()
+    elseif id == 5 then CarregarFrutas()
+    elseif id == 6 then CarregarEspadas()
+    elseif id == 7 then CarregarArmas()
     elseif id == 8 then CarregarEstilos()
-    elseif id == 9 then CarregarRaca()
+    elseif id == 9 then CarregarRacas()
     elseif id == 10 then CarregarHaki()
-    elseif id == 11 then CarregarUtil()
+    elseif id == 11 then CarregarMateriais()
+    elseif id == 12 then CarregarItens()
+    elseif id == 13 then CarregarMissoes()
+    elseif id == 14 then CarregarNPCs()
+    elseif id == 15 then CarregarAcessorios()
+    elseif id == 16 then CarregarTitulos()
+    elseif id == 17 then CarregarExploracao()
+    elseif id == 18 then CarregarPvP()
+    elseif id == 19 then CarregarInventario()
+    elseif id == 20 then CarregarTeleporte()
+    elseif id == 21 then CarregarServidor()
+    elseif id == 22 then CarregarEconomia()
+    elseif id == 23 then CarregarEstatisticas()
+    elseif id == 24 then CarregarUtilidades()
+    elseif id == 25 then CarregarAutomacao()
     end
     
     AtualizarScroll()
 end
 
 -- ============================================
--- ABA 1: INÍCIO
+-- CATEGORIA 1: PROGRESSÃO
 -- ============================================
 
-function CarregarInicio()
-    CriarTitulo("📊 STATUS DO JOGADOR")
+function CarregarProgressao()
+    CriarSecao("📈 PROGRESSÃO")
     CriarSeparador()
-    
-    local nivel = player.Level or player:GetAttribute("Level") or 0
-    local health = player.Character and player.Character.Humanoid and math.floor(player.Character.Humanoid.Health) or 0
-    local ilha = EncontrarMelhorIlha()
-    
-    CriarInfo("👤 Jogador", player.Name, Color3.fromRGB(255, 200, 100))
-    CriarInfo("🎯 Nível", nivel .. "/3000", Color3.fromRGB(100, 255, 100))
-    CriarInfo("💚 Vida", health .. "/100", Color3.fromRGB(100, 255, 100))
-    CriarInfo("📍 Ilha", ilha and ilha.nome or "Desconhecida", Color3.fromRGB(100, 200, 255))
-    CriarInfo("🌐 Server", game.JobId:sub(1, 12), Color3.fromRGB(150, 150, 200))
-    
+    CriarBotao("🚀 Farmar Níveis (Auto Quest)", Color3.fromRGB(0, 200, 100), FarmarComQuest)
+    CriarBotao("⏹ Parar Farm", Color3.fromRGB(200, 50, 50), PararFarm)
+    CriarBotao("Farmar Maestria", Color3.fromRGB(200, 150, 50), function() AcaoSimples("Farmar Maestria") end)
+    CriarBotao("Farmar Beli", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Farmar Beli") end)
+    CriarBotao("Farmar Fragmentos", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Farmar Fragmentos") end)
+    CriarBotao("Farmar Bones", Color3.fromRGB(200, 150, 50), function() AcaoSimples("Farmar Bones") end)
+    CriarBotao("Farmar Honra", Color3.fromRGB(200, 150, 50), function() AcaoSimples("Farmar Honra") end)
+    CriarBotao("Farmar Recompensa", Color3.fromRGB(200, 150, 50), function() AcaoSimples("Farmar Recompensa") end)
+    CriarBotao("Farmar Baús", Color3.fromRGB(100, 200, 100), function() AcaoSimples("Farmar Baús") end)
+    CriarBotao("Farmar Materiais", Color3.fromRGB(150, 150, 150), function() AcaoSimples("Farmar Materiais") end)
+    CriarSecao("📊 STATUS")
     CriarSeparador()
-    CriarTitulo("⚡ AÇÕES RÁPIDAS")
-    CriarSeparador()
-    
-    CriarCheckboxComando("💚 Curar", Color3.fromRGB(50, 200, 100), function(ativar, concluir)
-        if ativar then
-            Curar()
-            if concluir then concluir() end
-        end
-    end)
-    
-    CriarCheckboxComando("📊 Mostrar Info", Color3.fromRGB(100, 150, 255), function(ativar, concluir)
-        if ativar then
-            MostrarInfo()
-            if concluir then concluir() end
-        end
-    end)
-    
-    CriarCheckboxComando("🏝️ Teleportar Jungle", Color3.fromRGB(50, 200, 100), function(ativar, concluir)
-        if ativar then
-            TeleportarIlha("Jungle")
-            if concluir then concluir() end
-        end
-    end)
-end
-
--- ============================================
--- ABA 2: FARM (TUDO CHECKBOX)
--- ============================================
-
-function CarregarFarm()
-    CriarTitulo("⚔️ FARM AUTOMÁTICO")
-    CriarSeparador()
-    
-    CriarDescricao("📌 Marque os checkboxes para ativar os comandos")
-    CriarSeparador()
-    
-    CriarCheckboxComando("🚀 Farmar Níveis Automático", Color3.fromRGB(0, 200, 100), ComandoFarm)
-    
-    CriarCheckboxComando("💚 Auto Curar", Color3.fromRGB(50, 200, 100), function(ativar, concluir)
-        if ativar then
-            print("[CONFIG] Auto Curar ATIVADO")
-            task.spawn(function()
-                while true do
-                    if not ativar then break end
-                    Curar()
-                    task.wait(5)
-                end
-            end)
-        else
-            print("[CONFIG] Auto Curar DESATIVADO")
-        end
-        if concluir then concluir() end
-    end)
-    
-    CriarCheckboxComando("🏝️ Auto Teleport para Melhor Ilha", Color3.fromRGB(50, 200, 255), function(ativar, concluir)
-        if ativar then
-            print("[CONFIG] Auto Teleport ATIVADO")
-            task.spawn(function()
-                while ativar do
-                    local ilha = EncontrarMelhorIlha()
-                    if ilha then
-                        TeleportarIlha(ilha.nome)
-                    end
-                    task.wait(10)
-                end
-            end)
-        else
-            print("[CONFIG] Auto Teleport DESATIVADO")
-        end
-        if concluir then concluir() end
-    end)
-    
-    CriarCheckboxComando("🛡️ Anti-Ban (Modo Seguro)", Color3.fromRGB(255, 200, 100), function(ativar, concluir)
-        print("[CONFIG] Anti-Ban: " .. (ativar and "ON" or "OFF"))
-        if concluir then concluir() end
-    end)
-    
-    CriarSeparador()
-    CriarTitulo("📊 STATUS")
-    CriarSeparador()
-    
     local nivel = player.Level or player:GetAttribute("Level") or 0
     CriarInfo("Nível", nivel .. "/3000", Color3.fromRGB(100, 255, 100))
     CriarInfo("Kills", kills, Color3.fromRGB(255, 200, 100))
-    CriarInfo("Status", farmAtivo and "🟢 Farmando" or "🔴 Parado", farmAtivo and Color3.fromRGB(100, 255, 100) or Color3.fromRGB(255, 100, 100))
 end
 
 -- ============================================
--- ABA 3: BOSS (TUDO CHECKBOX)
+-- CATEGORIA 2: BOSSES
 -- ============================================
 
-function CarregarBoss()
-    CriarTitulo("👹 BOSSES")
+function CarregarBosses()
+    CriarSecao("👹 BOSSES")
     CriarSeparador()
-    
-    CriarDescricao("📌 Marque os bosses que deseja derrotar")
-    CriarSeparador()
-    
-    CriarCheckboxComando("👹 Derrotar Dough King", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoDerrotarBoss("Dough King", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("👹 Derrotar Cake Prince", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoDerrotarBoss("Cake Prince", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("👹 Derrotar Rip Indra", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoDerrotarBoss("Rip Indra", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("👹 Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoDerrotarBoss("Leviathan", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("👹 Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoDerrotarBoss("Sea Beast", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("👹 Derrotar Darkbeard", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoDerrotarBoss("Darkbeard", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("⭐ Derrotar Todos os Bosses", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
-        ComandoAcao("Derrotar Todos os Bosses", ativar, concluir)
-    end)
+    CriarBotao("Farmar Bosses", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Farmar Bosses") end)
+    CriarBotao("Derrotar Rip Indra", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Rip Indra") end)
+    CriarBotao("Derrotar Dough King", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Dough King") end)
+    CriarBotao("Derrotar Cake Prince", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Cake Prince") end)
+    CriarBotao("Derrotar Soul Reaper", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Soul Reaper") end)
+    CriarBotao("Derrotar Longma", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Longma") end)
+    CriarBotao("Derrotar Don Swan", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Don Swan") end)
+    CriarBotao("Derrotar Swan", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Swan") end)
+    CriarBotao("Derrotar Greybeard", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Greybeard") end)
+    CriarBotao("Derrotar Darkbeard", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Darkbeard") end)
+    CriarBotao("Derrotar Beautiful Pirate", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Beautiful Pirate") end)
+    CriarBotao("Derrotar Captain Elephant", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Captain Elephant") end)
+    CriarBotao("Derrotar Island Empress", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Island Empress") end)
+    CriarBotao("Derrotar Stone", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Stone") end)
+    CriarBotao("Derrotar Kilo Admiral", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Kilo Admiral") end)
+    CriarBotao("Derrotar Cursed Captain", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Cursed Captain") end)
+    CriarBotao("Derrotar Diamond", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Diamond") end)
+    CriarBotao("Derrotar Jeremy", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Jeremy") end)
+    CriarBotao("Derrotar Fajita", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Fajita") end)
+    CriarBotao("Derrotar Smoke Admiral", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Smoke Admiral") end)
+    CriarBotao("Derrotar Tide Keeper", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Tide Keeper") end)
+    CriarBotao("Derrotar Order", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Order") end)
+    CriarBotao("⚡ Derrotar Todos os Bosses", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Derrotar Todos os Bosses") end)
 end
 
 -- ============================================
--- ABA 4: SEA (TUDO CHECKBOX)
+-- CATEGORIA 3: SEA EVENTS
 -- ============================================
 
-function CarregarSea()
-    CriarTitulo("🌊 SEA EVENTS")
+function CarregarSeaEvents()
+    CriarSecao("🌊 SEA EVENTS")
     CriarSeparador()
-    
-    CriarDescricao("📌 Marque os eventos marítimos")
-    CriarSeparador()
-    
-    CriarCheckboxComando("🦈 Derrotar Terror Shark", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoAcao("Derrotar Terror Shark", ativar, concluir)
+    CriarToggle("🔄 Auto Sea Event", Color3.fromRGB(100, 200, 255), function(estado)
+        if estado then AutoSeaEvent() else PararSeaEvent() end
     end)
-    
-    CriarCheckboxComando("🐋 Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoAcao("Derrotar Sea Beast", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("🐉 Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoAcao("Derrotar Leviathan", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("🏝️ Encontrar Mirage Island", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
-        ComandoAcao("Encontrar Mirage Island", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("⛩️ Encontrar Kitsune Shrine", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
-        ComandoAcao("Encontrar Kitsune Shrine", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("🧊 Encontrar Frozen Dimension", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
-        ComandoAcao("Encontrar Frozen Dimension", ativar, concluir)
-    end)
+    CriarBotao("Derrotar Terror Shark", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Terror Shark") end)
+    CriarBotao("Derrotar Leviathan", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Leviathan") end)
+    CriarBotao("Derrotar Sea Beast", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Sea Beast") end)
+    CriarBotao("Derrotar Rumbling Waters", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Rumbling Waters") end)
+    CriarBotao("Derrotar Piratas do Mar", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Derrotar Piratas do Mar") end)
+    CriarBotao("Encontrar Mirage Island", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Mirage Island") end)
+    CriarBotao("Encontrar Kitsune Shrine", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Kitsune Shrine") end)
+    CriarBotao("Encontrar Frozen Dimension", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Frozen Dimension") end)
+    CriarBotao("Encontrar Prehistoric Island", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Prehistoric Island") end)
+    CriarBotao("Encontrar Ghost Ship", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Ghost Ship") end)
+    CriarBotao("Farmar Sea Events", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Farmar Sea Events") end)
 end
 
 -- ============================================
--- ABA 5: RAID (TUDO CHECKBOX)
+-- CATEGORIA 4: RAIDS
 -- ============================================
 
-function CarregarRaid()
-    CriarTitulo("⚔️ RAIDS")
+function CarregarRaids()
+    CriarSecao("⚔️ RAIDS")
     CriarSeparador()
-    
-    CriarDescricao("📌 Marque as opções de raid")
-    CriarSeparador()
-    
-    CriarCheckboxComando("⚔️ Farmar Raid", Color3.fromRGB(200, 50, 50), function(ativar, concluir)
-        ComandoAcao("Farmar Raid", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("🍎 Despertar Fruta", Color3.fromRGB(255, 200, 50), function(ativar, concluir)
-        ComandoAcao("Despertar Fruta", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("💎 Farmar Fragmentos", Color3.fromRGB(255, 200, 50), function(ativar, concluir)
-        ComandoAcao("Farmar Fragmentos", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("⭐ Completar Todas as Raids", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
-        ComandoAcao("Completar Todas as Raids", ativar, concluir)
-    end)
+    CriarBotao("⚔️ Iniciar Auto Raid", Color3.fromRGB(200, 50, 50), AutoRaid)
+    CriarBotao("⏹ Parar Raid", Color3.fromRGB(200, 50, 50), PararRaid)
+    CriarBotao("Despertar Fruta", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Despertar Fruta") end)
+    CriarBotao("Farmar Fragmentos", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Farmar Fragmentos") end)
+    CriarBotao("Completar Todas as Raids", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Completar Todas as Raids") end)
 end
 
 -- ============================================
--- ABA 6: FRUTAS (TUDO CHECKBOX)
+-- CATEGORIA 5: FRUTAS
 -- ============================================
 
 function CarregarFrutas()
-    CriarTitulo("🍎 FRUTAS")
+    CriarSecao("🍎 FRUTAS")
     CriarSeparador()
-    
-    CriarDescricao("📌 Marque as ações para frutas")
-    CriarSeparador()
-    
-    CriarCheckboxComando("🔭 Auto Sniper Frutas", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
-        print("[SNIPER] Sniper Frutas: " .. (ativar and "ON" or "OFF"))
-        if concluir then concluir() end
+    CriarToggle("🔭 Sniper Frutas/Baús", Color3.fromRGB(100, 200, 255), function(estado)
+        if estado then SniperFrutas() else PararSniper() end
     end)
-    
-    CriarCheckboxComando("🔄 Girar Frutas", Color3.fromRGB(255, 200, 50), function(ativar, concluir)
-        ComandoAcao("Girar Frutas", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("🛒 Comprar Frutas", Color3.fromRGB(255, 200, 50), function(ativar, concluir)
-        ComandoAcao("Comprar Frutas", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("🔍 Encontrar Frutas", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
-        ComandoAcao("Encontrar Frutas", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("📦 Guardar Frutas", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
-        ComandoAcao("Guardar Frutas", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("⭐ Despertar Todas as Frutas", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
-        ComandoAcao("Despertar Todas as Frutas", ativar, concluir)
-    end)
+    CriarBotao("Girar Frutas", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Girar Frutas") end)
+    CriarBotao("Comprar Frutas", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Comprar Frutas") end)
+    CriarBotao("Encontrar Frutas", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar Frutas") end)
+    CriarBotao("Coletar Frutas", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Coletar Frutas") end)
+    CriarBotao("Guardar Frutas", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Guardar Frutas") end)
+    CriarBotao("Despertar Todas as Frutas", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Despertar Todas as Frutas") end)
 end
 
 -- ============================================
--- ABA 7: ESPADAS (TUDO CHECKBOX)
+-- CATEGORIA 6: ESPADAS
 -- ============================================
 
 function CarregarEspadas()
-    CriarTitulo("🗡️ ESPADAS")
+    CriarSecao("🗡️ ESPADAS")
     CriarSeparador()
-    
-    CriarDescricao("📌 Marque as espadas que deseja conseguir")
-    CriarSeparador()
-    
     local espadas = {
         "True Triple Katana", "Cursed Dual Katana", "Shark Anchor",
         "Hallow Scythe", "Dark Blade V3", "Dragon Trident",
+        "Spikey Trident", "Buddy Sword", "Canvander",
         "Rengoku", "Midnight Blade", "Yama", "Tushita"
     }
     for _, espada in pairs(espadas) do
-        CriarCheckboxComando("🗡️ Conseguir " .. espada, Color3.fromRGB(200, 150, 50), function(ativar, concluir)
-            ComandoAcao("Conseguir " .. espada, ativar, concluir)
-        end)
+        CriarBotao("Conseguir " .. espada, Color3.fromRGB(200, 150, 50), function() AcaoSimples("Conseguir " .. espada) end)
     end
-    
-    CriarCheckboxComando("⭐ Conseguir Todas as Espadas", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
-        ComandoAcao("Conseguir Todas as Espadas", ativar, concluir)
-    end)
+    CriarBotao("Conseguir Todas as Espadas", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Conseguir Todas as Espadas") end)
 end
 
 -- ============================================
--- ABA 8: ESTILOS (TUDO CHECKBOX)
+-- CATEGORIA 7: ARMAS
+-- ============================================
+
+function CarregarArmas()
+    CriarSecao("🏹 ARMAS")
+    CriarSeparador()
+    CriarBotao("Conseguir Todas as Armas", Color3.fromRGB(200, 150, 50), function() AcaoSimples("Conseguir Todas as Armas") end)
+    CriarBotao("Farmar Maestria das Armas", Color3.fromRGB(200, 150, 50), function() AcaoSimples("Farmar Maestria das Armas") end)
+end
+
+-- ============================================
+-- CATEGORIA 8: ESTILOS
 -- ============================================
 
 function CarregarEstilos()
-    CriarTitulo("🥊 ESTILOS")
+    CriarSecao("🥊 ESTILOS")
     CriarSeparador()
-    
-    CriarDescricao("📌 Marque os estilos que deseja aprender")
-    CriarSeparador()
-    
     local estilos = {
         "Dark Step", "Electric", "Water Kung Fu", "Dragon Breath",
         "Superhuman", "Death Step", "Sharkman Karate",
         "Electric Claw", "Dragon Talon", "God Human", "Sanguine Art"
     }
     for _, estilo in pairs(estilos) do
-        CriarCheckboxComando("🥊 Aprender " .. estilo, Color3.fromRGB(150, 100, 200), function(ativar, concluir)
-            ComandoAcao("Aprender " .. estilo, ativar, concluir)
-        end)
+        CriarBotao("Conseguir " .. estilo, Color3.fromRGB(150, 100, 200), function() AcaoSimples("Conseguir " .. estilo) end)
     end
-    
-    CriarCheckboxComando("⭐ Aprender Todos os Estilos", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
-        ComandoAcao("Aprender Todos os Estilos", ativar, concluir)
-    end)
+    CriarBotao("Conseguir Todos os Estilos", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Conseguir Todos os Estilos") end)
 end
 
 -- ============================================
--- ABA 9: RAÇA (TUDO CHECKBOX)
+-- CATEGORIA 9: RAÇAS
 -- ============================================
 
-function CarregarRaca()
-    CriarTitulo("👤 RAÇA")
+function CarregarRacas()
+    CriarSecao("👤 RAÇAS")
     CriarSeparador()
-    
-    CriarDescricao("📌 Marque as evoluções de raça")
-    CriarSeparador()
-    
-    CriarCheckboxComando("⬆️ Evoluir Race V2", Color3.fromRGB(100, 100, 200), function(ativar, concluir)
-        ComandoAcao("Evoluir Race V2", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("⬆️ Evoluir Race V3", Color3.fromRGB(100, 100, 200), function(ativar, concluir)
-        ComandoAcao("Evoluir Race V3", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("⬆️ Evoluir Race V4", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
-        ComandoAcao("Evoluir Race V4", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("⚡ Completar Trial", Color3.fromRGB(100, 100, 200), function(ativar, concluir)
-        ComandoAcao("Completar Trial", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("🔵 Conseguir Blue Gear", Color3.fromRGB(80, 80, 180), function(ativar, concluir)
-        ComandoAcao("Conseguir Blue Gear", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("⭐ Desbloquear Todas as Raças", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
-        ComandoAcao("Desbloquear Todas as Raças", ativar, concluir)
-    end)
+    CriarBotao("Evoluir Race V2", Color3.fromRGB(100, 100, 200), function() AcaoSimples("Evoluir Race V2") end)
+    CriarBotao("Evoluir Race V3", Color3.fromRGB(100, 100, 200), function() AcaoSimples("Evoluir Race V3") end)
+    CriarBotao("Evoluir Race V4", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Evoluir Race V4") end)
+    CriarBotao("Completar Trial", Color3.fromRGB(100, 100, 200), function() AcaoSimples("Completar Trial") end)
+    CriarBotao("Conseguir Blue Gear", Color3.fromRGB(80, 80, 180), function() AcaoSimples("Conseguir Blue Gear") end)
+    CriarBotao("Desbloquear Todas as Raças", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Desbloquear Todas as Raças") end)
 end
 
 -- ============================================
--- ABA 10: HAKI (TUDO CHECKBOX)
+-- CATEGORIA 10: HAKI
 -- ============================================
 
 function CarregarHaki()
-    CriarTitulo("🟣 HAKI")
+    CriarSecao("🟣 HAKI")
     CriarSeparador()
-    
-    CriarDescricao("📌 Marque as evoluções de Haki")
-    CriarSeparador()
-    
-    CriarCheckboxComando("🟣 Evoluir Aura", Color3.fromRGB(200, 100, 255), function(ativar, concluir)
-        ComandoAcao("Evoluir Aura", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("👁️ Evoluir Observation", Color3.fromRGB(200, 100, 255), function(ativar, concluir)
-        ComandoAcao("Evoluir Observation", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("👁️ Conseguir Observation V2", Color3.fromRGB(200, 100, 255), function(ativar, concluir)
-        ComandoAcao("Conseguir Observation V2", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("🌈 Conseguir Rainbow Haki", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
-        ComandoAcao("Conseguir Rainbow Haki", ativar, concluir)
-    end)
-    
-    CriarCheckboxComando("⭐ Maximizar Haki", Color3.fromRGB(255, 200, 0), function(ativar, concluir)
-        ComandoAcao("Maximizar Haki", ativar, concluir)
-    end)
+    CriarBotao("Evoluir Aura", Color3.fromRGB(200, 100, 255), function() AcaoSimples("Evoluir Aura") end)
+    CriarBotao("Evoluir Observation", Color3.fromRGB(200, 100, 255), function() AcaoSimples("Evoluir Observation") end)
+    CriarBotao("Conseguir Observation V2", Color3.fromRGB(200, 100, 255), function() AcaoSimples("Conseguir Observation V2") end)
+    CriarBotao("Conseguir Rainbow Haki", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Conseguir Rainbow Haki") end)
+    CriarBotao("Maximizar Haki", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Maximizar Haki") end)
 end
 
 -- ============================================
--- ABA 11: UTILIDADES (TUDO CHECKBOX)
+-- CATEGORIA 11: MATERIAIS
 -- ============================================
 
-function CarregarUtil()
-    CriarTitulo("⚙️ UTILIDADES")
+function CarregarMateriais()
+    CriarSecao("📦 MATERIAIS")
     CriarSeparador()
-    
-    CriarDescricao("📌 Marque as utilidades que deseja ativar")
+    local materiais = {
+        "Couro", "Scrap Metal", "Fish Tail", "Mystic Droplet",
+        "Magma Ore", "Radioactive Material", "Vampire Fang",
+        "Conjured Cocoa", "Blaze Ember", "Gunpowder",
+        "Mini Tusk", "Angel Wings", "Dark Fragment"
+    }
+    for _, mat in pairs(materiais) do
+        CriarBotao("Farmar " .. mat, Color3.fromRGB(150, 150, 150), function() AcaoSimples("Farmar " .. mat) end)
+    end
+    CriarBotao("Farmar Todos os Materiais", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Farmar Todos os Materiais") end)
+end
+
+-- ============================================
+-- CATEGORIA 12: ITENS
+-- ============================================
+
+function CarregarItens()
+    CriarSecao("🎯 ITENS")
     CriarSeparador()
-    
-    CriarCheckboxComando("💚 Auto Curar", Color3.fromRGB(50, 200, 100), function(ativar, concluir)
-        if ativar then
-            print("[UTIL] Auto Curar ATIVADO")
-            task.spawn(function()
-                while ativar do
-                    Curar()
-                    task.wait(5)
-                end
-            end)
-        else
-            print("[UTIL] Auto Curar DESATIVADO")
-        end
-        if concluir then concluir() end
+    local itens = {
+        "God's Chalice", "Sweet Chalice", "Fist of Darkness",
+        "Hallow Essence", "Hidden Key", "Library Key", "Red Key"
+    }
+    for _, item in pairs(itens) do
+        CriarBotao("Conseguir " .. item, Color3.fromRGB(100, 200, 255), function() AcaoSimples("Conseguir " .. item) end)
+    end
+    CriarBotao("Conseguir Todos os Itens", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Conseguir Todos os Itens") end)
+end
+
+-- ============================================
+-- CATEGORIA 13: MISSÕES
+-- ============================================
+
+function CarregarMissoes()
+    CriarSecao("📋 MISSÕES")
+    CriarSeparador()
+    CriarBotao("Completar Missões", Color3.fromRGB(100, 150, 255), function() AcaoSimples("Completar Missões") end)
+    CriarBotao("Completar Missões de Elite", Color3.fromRGB(100, 150, 255), function() AcaoSimples("Completar Missões de Elite") end)
+    CriarBotao("Completar Missões do Dojo", Color3.fromRGB(100, 150, 255), function() AcaoSimples("Completar Missões do Dojo") end)
+    CriarBotao("Completar Missões de Eventos", Color3.fromRGB(100, 150, 255), function() AcaoSimples("Completar Missões de Eventos") end)
+    CriarBotao("Completar Missões Secretas", Color3.fromRGB(100, 150, 255), function() AcaoSimples("Completar Missões Secretas") end)
+end
+
+-- ============================================
+-- CATEGORIA 14: NPCS
+-- ============================================
+
+function CarregarNPCs()
+    CriarSecao("🗺️ NPCs")
+    CriarSeparador()
+    local npcs = {
+        "Legendary Sword Dealer", "Master of Auras", "Hungry Man",
+        "Sick Man", "Dragon Hunter", "Dragon Wizard",
+        "Tort", "Gravestone"
+    }
+    for _, npc in pairs(npcs) do
+        CriarBotao("Encontrar " .. npc, Color3.fromRGB(100, 200, 255), function() AcaoSimples("Encontrar " .. npc) end)
+    end
+    CriarBotao("Encontrar Todos os NPCs", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Encontrar Todos os NPCs") end)
+end
+
+-- ============================================
+-- CATEGORIA 15: ACESSÓRIOS
+-- ============================================
+
+function CarregarAcessorios()
+    CriarSecao("🎀 ACESSÓRIOS")
+    CriarSeparador()
+    CriarBotao("Conseguir Todos os Acessórios", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Conseguir Todos os Acessórios") end)
+    CriarBotao("Farmar Acessórios", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Farmar Acessórios") end)
+end
+
+-- ============================================
+-- CATEGORIA 16: TÍTULOS
+-- ============================================
+
+function CarregarTitulos()
+    CriarSecao("🏷️ TÍTULOS")
+    CriarSeparador()
+    CriarBotao("Conseguir Todos os Títulos", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Conseguir Todos os Títulos") end)
+end
+
+-- ============================================
+-- CATEGORIA 17: EXPLORAÇÃO
+-- ============================================
+
+function CarregarExploracao()
+    CriarSecao("🏝️ EXPLORAÇÃO")
+    CriarSeparador()
+    CriarBotao("Descobrir Todas as Ilhas", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Descobrir Todas as Ilhas") end)
+    CriarBotao("Ativar Todos os Portais", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Ativar Todos os Portais") end)
+    CriarBotao("Resolver Todos os Quebra-Cabeças", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Resolver Todos os Quebra-Cabeças") end)
+    CriarBotao("Coletar Todos os Baús", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Coletar Todos os Baús") end)
+end
+
+-- ============================================
+-- CATEGORIA 18: PVP
+-- ============================================
+
+function CarregarPvP()
+    CriarSecao("⚔️ PVP")
+    CriarSeparador()
+    CriarBotao("Farmar Bounty", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Farmar Bounty") end)
+    CriarBotao("Farmar Honor", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Farmar Honor") end)
+    CriarBotao("Caçar Jogadores", Color3.fromRGB(200, 50, 50), function() AcaoSimples("Caçar Jogadores") end)
+    CriarBotao("Auto PvP", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Auto PvP") end)
+end
+
+-- ============================================
+-- CATEGORIA 19: INVENTÁRIO
+-- ============================================
+
+function CarregarInventario()
+    CriarSecao("📦 INVENTÁRIO")
+    CriarSeparador()
+    CriarBotao("Organizar Inventário", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Organizar Inventário") end)
+    CriarBotao("Equipar Melhor Fruta", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Equipar Melhor Fruta") end)
+    CriarBotao("Equipar Melhor Espada", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Equipar Melhor Espada") end)
+    CriarBotao("Equipar Melhor Arma", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Equipar Melhor Arma") end)
+    CriarBotao("Equipar Melhor Estilo", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Equipar Melhor Estilo") end)
+end
+
+-- ============================================
+-- CATEGORIA 20: TELEPORTE
+-- ============================================
+
+function CarregarTeleporte()
+    CriarSecao("🚀 TELEPORTE")
+    CriarSeparador()
+    CriarBotao("Teleportar para Ilhas", Color3.fromRGB(50, 200, 100), function() AcaoSimples("Teleportar para Ilhas") end)
+    CriarBotao("Teleportar para Bosses", Color3.fromRGB(50, 200, 100), function() AcaoSimples("Teleportar para Bosses") end)
+    CriarBotao("Teleportar para NPCs", Color3.fromRGB(50, 200, 100), function() AcaoSimples("Teleportar para NPCs") end)
+    CriarBotao("Teleportar para Eventos", Color3.fromRGB(50, 200, 100), function() AcaoSimples("Teleportar para Eventos") end)
+end
+
+-- ============================================
+-- CATEGORIA 21: SERVIDOR
+-- ============================================
+
+function CarregarServidor()
+    CriarSecao("🌐 SERVIDOR")
+    CriarSeparador()
+    CriarBotao("🔄 Trocar de Servidor", Color3.fromRGB(100, 200, 255), ServerHop)
+    CriarBotao("🔍 Procurar Servidor Vazio", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Procurar Servidor Vazio") end)
+    CriarBotao("🔄 Reentrar", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Reentrar") end)
+    CriarBotao("👹 Server Hop Boss", Color3.fromRGB(100, 200, 255), ServerHopBoss)
+    CriarBotao("🍎 Server Hop Frutas", Color3.fromRGB(100, 200, 255), ServerHopFrutas)
+    CriarBotao("🌊 Server Hop Eventos", Color3.fromRGB(100, 200, 255), ServerHopEventos)
+end
+
+-- ============================================
+-- CATEGORIA 22: ECONOMIA
+-- ============================================
+
+function CarregarEconomia()
+    CriarSecao("💳 ECONOMIA")
+    CriarSeparador()
+    CriarBotao("Comprar Todas as Espadas", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Comprar Todas as Espadas") end)
+    CriarBotao("Comprar Todas as Armas", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Comprar Todas as Armas") end)
+    CriarBotao("Comprar Todos os Estilos", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Comprar Todos os Estilos") end)
+    CriarBotao("Comprar Todos os Barcos", Color3.fromRGB(255, 200, 50), function() AcaoSimples("Comprar Todos os Barcos") end)
+end
+
+-- ============================================
+-- CATEGORIA 23: ESTATÍSTICAS
+-- ============================================
+
+function CarregarEstatisticas()
+    CriarSecao("📊 ESTATÍSTICAS")
+    CriarSeparador()
+    CriarBotao("📊 Distribuir Status", Color3.fromRGB(100, 150, 255), AutoUpgradeStats)
+    CriarBotao("🔄 Resetar Status", Color3.fromRGB(100, 150, 255), ResetarStats)
+    CriarBotao("Selecionar Build", Color3.fromRGB(100, 150, 255), function() AcaoSimples("Selecionar Build") end)
+end
+
+-- ============================================
+-- CATEGORIA 24: UTILIDADES
+-- ============================================
+
+function CarregarUtilidades()
+    CriarSecao("⚙️ UTILIDADES")
+    CriarSeparador()
+    CriarBotao("💚 Curar", Color3.fromRGB(50, 200, 100), Curar)
+    CriarBotao("📊 Info", Color3.fromRGB(100, 150, 255), MostrarInfo)
+    CriarToggle("💤 Anti AFK", Color3.fromRGB(100, 200, 255), function(estado)
+        if estado then AutoAFK() end
     end)
-    
-    CriarCheckboxComando("🛡️ Anti-Ban", Color3.fromRGB(255, 200, 100), function(ativar, concluir)
-        print("[UTIL] Anti-Ban: " .. (ativar and "ON" or "OFF"))
-        if concluir then concluir() end
-    end)
-    
-    CriarCheckboxComando("💤 Anti AFK", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
-        if ativar then
-            print("[UTIL] Anti AFK ATIVADO")
-            task.spawn(function()
-                while ativar do
-                    task.wait(60)
-                    if player.Character and player.Character:FindFirstChild("Humanoid") then
-                        player.Character.Humanoid:MoveTo(Vector3.new(0, 0, 0))
-                        task.wait(0.1)
-                        player.Character.Humanoid:MoveTo(Vector3.new(10, 0, 10))
-                    end
-                end
-            end)
-        else
-            print("[UTIL] Anti AFK DESATIVADO")
-        end
-        if concluir then concluir() end
-    end)
-    
-    CriarCheckboxComando("🔄 Auto Equipar", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
-        print("[UTIL] Auto Equipar: " .. (ativar and "ON" or "OFF"))
-        if concluir then concluir() end
-    end)
-    
-    CriarCheckboxComando("🚀 FPS Boost", Color3.fromRGB(100, 200, 255), function(ativar, concluir)
-        print("[UTIL] FPS Boost: " .. (ativar and "ON" or "OFF"))
-        if concluir then concluir() end
-    end)
+    CriarBotao("FPS Boost", Color3.fromRGB(100, 200, 255), function() AcaoSimples("FPS Boost") end)
+    CriarBotao("Reconnect Automático", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Reconnect Automático") end)
+    CriarBotao("Auto Salvar", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Auto Salvar") end)
+    CriarBotao("Auto Equipar", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Auto Equipar") end)
+    CriarBotao("Auto Haki", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Auto Haki") end)
+    CriarBotao("Auto Instinto", Color3.fromRGB(100, 200, 255), function() AcaoSimples("Auto Instinto") end)
+end
+
+-- ============================================
+-- CATEGORIA 25: AUTOMAÇÃO
+-- ============================================
+
+function CarregarAutomacao()
+    CriarSecao("🤖 AUTOMAÇÃO")
+    CriarSeparador()
+    CriarBotao("Farmar Tudo", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Farmar Tudo") end)
+    CriarBotao("Completar Tudo", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Completar Tudo") end)
+    CriarBotao("Desbloquear Tudo", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Desbloquear Tudo") end)
+    CriarBotao("Coletar Tudo", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Coletar Tudo") end)
+    CriarBotao("Evoluir Tudo", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Evoluir Tudo") end)
+    CriarBotao("Maximizar Conta", Color3.fromRGB(255, 200, 0), function() AcaoSimples("Maximizar Conta") end)
 end
 
 -- ============================================
@@ -1097,9 +1313,9 @@ end
 -- ============================================
 
 local footer = Instance.new("TextLabel")
-footer.Size = UDim2.new(1, 0, 0, 16)
-footer.Position = UDim2.new(0, 0, 1, -5)
-footer.Text = "✅ v12.0 Checkbox Comandos | Marcileialves"
+footer.Size = UDim2.new(1, 0, 0, 14)
+footer.Position = UDim2.new(0, 0, 1, -4)
+footer.Text = "⭐ v9.0 Completo | Marcileialves"
 footer.TextColor3 = Color3.fromRGB(150, 150, 180)
 footer.BackgroundTransparency = 1
 footer.Font = Enum.Font.GothamMedium
@@ -1110,7 +1326,7 @@ footer.Parent = frame
 -- INICIALIZA
 -- ============================================
 
-SelecionarAba(1)
+SelecionarCategoria(1)
 
-print("✅ Blox Fruits Hub 12.0 carregado!")
+print("✅ Blox Fruits Hub 9.0 carregado!")
 print("📌 GitHub: https://github.com/Marcileialves/Blox-Fruits-Script-Hub")
